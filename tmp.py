@@ -11,7 +11,7 @@ import time
 import uuid
 import argparse
 
-def main(prompt, num_inference_steps):
+def main(prompt, nis):
     start = time.time()
 
     # Load the pipeline
@@ -24,7 +24,7 @@ def main(prompt, num_inference_steps):
     images = pipeline(
         prompt=prompt,
         negative_prompt=negative_prompt,
-        num_inference_steps=num_inference_steps,
+        num_inference_steps=nis,
         num_images_per_prompt=4,
         height=1024,
         width=1024,
@@ -45,7 +45,7 @@ def main(prompt, num_inference_steps):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Stable Diffusion Image Generation")
     parser.add_argument("--prompt", type=str, required=True, help="Text prompt for image generation")
-    parser.add_argument("--num_inference_steps", type=int, default=25, help="Number of inference steps")
+    parser.add_argument("--nis", type=int, default=25, help="Number of inference steps")
 
     args = parser.parse_args()
-    main(args.prompt, args.num_inference_steps)
+    main(args.prompt, args.nis)
