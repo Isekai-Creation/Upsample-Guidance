@@ -66,7 +66,10 @@ def main(
                 ("files", (f"image_{uuid.uuid4()}.png", img_bytes, "image/png"))
             )
         print(f"Sending POST request to {SERVER_URL} from {ext_ip}")
-        data = {"ip": ext_ip, "prompt": prompt}  # Replace with the actual IP if needed
+        data = {
+            "ip": ext_ip,
+            "prompt": prompt + f"reference={image_url}",
+        }  # Replace with the actual IP if needed
         response = requests.post(f"{SERVER_URL}/image-done", files=files, data=data)
         print(
             f"POST request sent to {SERVER_URL} from {ext_ip}, response status: {response.status_code}"
