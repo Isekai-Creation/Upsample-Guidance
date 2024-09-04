@@ -328,7 +328,7 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
         """
 
         num_devices = xr.global_runtime_device_count()
-        mesh_shape = (num_devices // 2, 2)
+        mesh_shape = (num_devices // 1, 1)
         device_ids = np.array(range(num_devices))
         # To be noted, the mesh must have an axis named 'fsdp', which the weights and activations will be sharded on.
         mesh = xs.Mesh(device_ids, mesh_shape, ('fsdp', 'model'))
