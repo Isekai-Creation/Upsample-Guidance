@@ -10,7 +10,18 @@ from loguru import logger
 
 
 try:
+    import numpy as np
     import torch_xla.core.xla_model as xm
+    from torch_xla import runtime as xr
+    import torch_xla.distributed.spmd as xs
+    from torch_xla.experimental.spmd_fully_sharded_data_parallel import (
+        _prepare_spmd_partition_spec,
+        SpmdFullyShardedDataParallel as FSDPv2,
+    )
+
+
+
+    xr.use_spmd()
 
     print("_________________________XLA is Available!")
     XLA_AVAILABLE = True
@@ -92,18 +103,17 @@ def retrieve_timesteps(
     return timesteps, num_inference_steps
 
 
-
 class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
 
     def upsampling(self, img: torch.Tensor, scale_factor: int = 2, mode: str = "nearest"):
         # mode: nearest, bilinear
         upsample_model = torch.nn.Upsample(scale_factor=scale_factor, mode=mode)
         return upsample_model(img)
-        
+
     def downsampling(self, img: torch.Tensor, scale_factor: int = 2):
         downsampl_model = torch.nn.AvgPool2d(kernel_size=(scale_factor, scale_factor), stride=scale_factor)
         return downsampl_model(img)
-    
+
     def find_closest_index(self, alphas_cum_prod, tau):
         left, right = 0, len(alphas_cum_prod)
         while left < left:
@@ -123,13 +133,12 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
         snr = alphas / (1 - alphas)
         snr_low = alphas / (1 - alphas) * scale_factor ** 2
         log_snr, log_snr_low = torch.log(snr), torch.log(snr_low)
-        
+
         def get_single_match(t):
             differences = torch.abs(log_snr_low[t] - log_snr)
             tau = torch.argmin(differences)
             return tau
         return [get_single_match(t) for t in range(len(alphas))]
-
 
     @torch.no_grad()
     def __call__(
@@ -318,6 +327,15 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
             `tuple`. When returning a tuple, the first element is a list with the generated images.
         """
 
+        num_devices = xr.global_runtime_device_count()
+        mesh_shape = (num_devices // 2, 2)
+        device_ids = np.array(range(num_devices))
+        # To be noted, the mesh must have an axis named 'fsdp', which the weights and activations will be sharded on.
+        mesh = xs.Mesh(device_ids, mesh_shape, ('fsdp', 'model'))
+        xs.set_global_mesh(mesh)
+
+        self.unet = FSDPv2(self.unet)
+
         callback = kwargs.pop("callback", None)
         callback_steps = kwargs.pop("callback_steps", None)
 
@@ -341,7 +359,6 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
         original_size = original_size or (height, width)
         target_size = target_size or (height, width)
 
-        
         # 1. Check inputs. Raise error if not correct
         self.check_inputs(
             prompt,
@@ -376,6 +393,8 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
             batch_size = prompt_embeds.shape[0]
 
         device = self._execution_device
+
+        print("_________________Using Device:", device)
 
         # 3. Encode input prompt
         lora_scale = (
@@ -422,7 +441,7 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
         # 6. Prepare extra step kwargs. TODO: Logic should ideally just be moved out of the pipeline
         extra_step_kwargs = self.prepare_extra_step_kwargs(generator, eta)
 
-                # 7. Prepare added time ids & embeddings
+        # 7. Prepare added time ids & embeddings
         add_text_embeds = pooled_prompt_embeds
         if self.text_encoder_2 is None:
             text_encoder_projection_dim = int(pooled_prompt_embeds.shape[-1])
@@ -465,10 +484,10 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
                 self.do_classifier_free_guidance,
             )
 
-       # 8. Denoising loop
+        # 8. Denoising loop
         num_warmup_steps = max(len(timesteps) - num_inference_steps * self.scheduler.order, 0)
 
-         # 8.1 Apply denoising_end
+        # 8.1 Apply denoising_end
         if (
             self.denoising_end is not None
             and isinstance(self.denoising_end, float)
@@ -496,6 +515,8 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
         # upsampling guidance
         m = scale_factor
         taus = self.get_tau(m, self.scheduler.alphas_cumprod)
+
+        print("Latents shape:", latents.shape)
         with self.progress_bar(total=num_inference_steps) as progress_bar:
             for i, t in enumerate(timesteps):
                 if self.interrupt:
@@ -504,49 +525,75 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
                 # expand the latents if we are doing classifier free guidance
                 latent_model_input = torch.cat([latents] * 2) if self.do_classifier_free_guidance else latents
                 latent_model_input = self.scheduler.scale_model_input(latent_model_input, t)
-                
-                d_latent_model_input = torch.cat([self.downsampling(latents, m)] * 2) if self.do_classifier_free_guidance else self.downsampling(latents, m)
-                a_t = self.scheduler.alphas_cumprod[t]
-                p = a_t + (1 - a_t) / (m ** 2)
-                p_factor = 1 / (p ** 0.5)
-                tau = taus[t].to(t.device)
-                d_latent_model_input = self.scheduler.scale_model_input(d_latent_model_input, tau)
 
-
-
-                # predict the noise residual
-                added_cond_kwargs = {"text_embeds": add_text_embeds, "time_ids": add_time_ids}
-                if ip_adapter_image is not None or ip_adapter_image_embeds is not None:
-                    added_cond_kwargs["image_embeds"] = image_embeds
-
-                noise_pred = self.unet(
+                xs.mark_sharding(
                     latent_model_input,
-                    t,
-                    encoder_hidden_states=prompt_embeds,
-                    timestep_cond=timestep_cond,
-                    cross_attention_kwargs=self.cross_attention_kwargs,
-                    added_cond_kwargs=added_cond_kwargs,
-                    return_dict=False,
-                )[0]
+                    xs.get_global_mesh(),
+                    _prepare_spmd_partition_spec(latent_model_input),
+                )
 
-                # predict the nosie residual
-                d_noise_pred = self.unet(
-                    d_latent_model_input * p_factor,
-                    tau, 
-                    encoder_hidden_states=prompt_embeds,
-                    timestep_cond=timestep_cond,
-                    cross_attention_kwargs=self.cross_attention_kwargs,
-                    added_cond_kwargs=added_cond_kwargs,
-                    return_dict=False,
-                )[0]
+                if m > 1:
 
-                noise_adj = self.upsampling(d_noise_pred/m, scale_factor=scale_factor) + noise_pred - self.upsampling(self.downsampling(noise_pred))
-                us_wt = time_factor * torch.heaviside(t - (1 - us_eta) * 1000, torch.tensor(0.0).to(t.device))
-                noise_pred = (1 - us_wt) * noise_pred + us_wt * noise_adj
+                    d_latent_model_input = torch.cat([self.downsampling(latents, m)] * 2) if self.do_classifier_free_guidance else self.downsampling(latents, m)
+                    a_t = self.scheduler.alphas_cumprod[t.long()]
+                    p = a_t + (1 - a_t) / (m ** 2)
+                    p_factor = 1 / (p ** 0.5)
+                    tau = taus[t.long().item()].to(t.device)
 
+                    d_latent_model_input = self.scheduler.scale_model_input(d_latent_model_input, tau)
 
+                    xs.mark_sharding(
+                        d_latent_model_input,
+                        xs.get_global_mesh(),
+                        _prepare_spmd_partition_spec(d_latent_model_input),
+                    )
 
+                    # predict the noise residual
+                    added_cond_kwargs = {"text_embeds": add_text_embeds, "time_ids": add_time_ids}
+                    if ip_adapter_image is not None or ip_adapter_image_embeds is not None:
+                        added_cond_kwargs["image_embeds"] = image_embeds
 
+                    noise_pred = self.unet(
+                        latent_model_input,
+                        t,
+                        encoder_hidden_states=prompt_embeds,
+                        timestep_cond=timestep_cond,
+                        cross_attention_kwargs=self.cross_attention_kwargs,
+                        added_cond_kwargs=added_cond_kwargs,
+                        return_dict=False,
+                    )[0]
+
+                    # predict the nosie residual
+                    d_noise_pred = self.unet(
+                        d_latent_model_input * p_factor,
+                        tau, 
+                        encoder_hidden_states=prompt_embeds,
+                        timestep_cond=timestep_cond,
+                        cross_attention_kwargs=self.cross_attention_kwargs,
+                        added_cond_kwargs=added_cond_kwargs,
+                        return_dict=False,
+                    )[0]
+
+                    noise_adj = self.upsampling(d_noise_pred/m, scale_factor=scale_factor) + noise_pred - self.upsampling(self.downsampling(noise_pred))
+                    us_wt = time_factor * torch.heaviside(t - (1 - us_eta) * 1000, torch.tensor(0.0).to(t.device))
+                    noise_pred = (1 - us_wt) * noise_pred + us_wt * noise_adj
+
+                else:
+
+                    # predict the noise residual
+                    added_cond_kwargs = {"text_embeds": add_text_embeds, "time_ids": add_time_ids}
+                    if ip_adapter_image is not None or ip_adapter_image_embeds is not None:
+                        added_cond_kwargs["image_embeds"] = image_embeds
+
+                    noise_pred = self.unet(
+                        latent_model_input,
+                        t,
+                        encoder_hidden_states=prompt_embeds,
+                        timestep_cond=timestep_cond,
+                        cross_attention_kwargs=self.cross_attention_kwargs,
+                        added_cond_kwargs=added_cond_kwargs,
+                        return_dict=False,
+                    )[0]
 
                 # perform guidance
                 if self.do_classifier_free_guidance:
@@ -576,6 +623,8 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
                     if callback is not None and i % callback_steps == 0:
                         step_idx = i // getattr(self.scheduler, "order", 1)
                         callback(step_idx, t, latents)
+
+                print(f"Mark checkpoint {i} {t}")
 
                 if XLA_AVAILABLE:
                     xm.mark_step()
@@ -615,6 +664,7 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
                 self.vae.to(dtype=torch.float16)
         else:
             image = latents
+
 
         if not output_type == "latent":
             """ # apply watermark if available

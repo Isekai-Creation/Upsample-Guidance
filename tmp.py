@@ -1,4 +1,4 @@
-from sd15_upsample import StableDiffusionUpsamplingGuidancePipeline
+import numpy as np
 import torch
 import torch_xla as xla
 import torch_xla.core.xla_model as xm
@@ -6,7 +6,6 @@ from diffusers import DiffusionPipeline
 import torch.distributed as dist
 import torch.multiprocessing as mp
 import torch_xla.distributed.xla_backend
-import datetime
 import time
 import uuid
 import argparse
@@ -14,13 +13,21 @@ from PIL import Image
 import requests
 from io import BytesIO
 import os
+import torch_xla.distributed.spmd as xs
+
+
+from torch_xla import runtime as xr
+from torch_xla.experimental.spmd_fully_sharded_data_parallel import (
+    _prepare_spmd_partition_spec,
+    SpmdFullyShardedDataParallel as FSDPv2,
+)
 
 
 def main(
     prompt,
     negative_prompt,
     num_inference_steps,
-    num_images_per_prompt=4,
+    num_images_per_prompt,
     image_url=None,
     save_dir="~",
     width=1024,
@@ -31,8 +38,8 @@ def main(
     start = time.time()
 
     # Load the pipeline
-    pipeline = DiffusionPipeline.from_pretrained(
-        "KBlueLeaf/Kohaku-XL-Epsilon-rev3", device=xm.xla_device()
+    pipeline = DiffusionPipeline.from_pretrained("KBlueLeaf/Kohaku-XL-Epsilon-rev3").to(
+        xm.xla_device()
     )
 
     init_image = None
