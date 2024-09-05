@@ -23,6 +23,13 @@ import requests
 from io import BytesIO
 import os
 
+from PIL import Image
+import requests
+import base64
+from io import BytesIO
+
+from vision_process import get_image
+
 
 def main(
     prompt,
@@ -47,9 +54,7 @@ def main(
 
     init_image = None
     if image_url:
-        response = requests.get(image_url)
-        init_image = Image.open(BytesIO(response.content)).convert("RGB")
-        init_image = init_image.resize((1024, 1024))
+        init_image = get_image(image_url, resized_width=width, resized_height=height)
 
     seed = random.randint(0, 2147483647)
     print(f"Generated Seed: {seed}")
