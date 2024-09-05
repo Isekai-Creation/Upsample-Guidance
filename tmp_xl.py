@@ -1,3 +1,4 @@
+import random
 from sdxl_upsample import StableDiffusionXLUpsamplingGuidancePipeline
 import numpy as np
 import torch
@@ -50,6 +51,11 @@ def main(
         init_image = Image.open(BytesIO(response.content)).convert("RGB")
         init_image = init_image.resize((1024, 1024))
 
+    seed = random.randint(0, 2147483647)
+    print(f"Generated Seed: {seed}")
+
+    generator = torch.Generator(device="cpu").manual_seed(seed)
+
     # Generate the image and log metrics
     images = pipeline(
         prompt=prompt,
@@ -59,6 +65,7 @@ def main(
         num_images_per_prompt=num_images_per_prompt,
         height=height,
         width=width,
+        generator=generator,
         time_factor=0.81,
         scale_factor=scale_factor,
         us_eta=0.49,
