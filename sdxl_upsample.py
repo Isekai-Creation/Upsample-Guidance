@@ -180,6 +180,7 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
         clip_skip: Optional[int] = None,
         callback_on_step_end: Optional[Callable[[int, int, Dict], None]] = None,
         callback_on_step_end_tensor_inputs: List[str] = ["latents"],
+        del_unet: bool = False,
         **kwargs,
     ):
         r"""
@@ -664,6 +665,8 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
                 self.vae.to(dtype=torch.float16)
         else:
             image = latents
+
+        del self.unet
 
 
         if not output_type == "latent":
