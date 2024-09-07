@@ -1,33 +1,13 @@
 import random
-from sdxl_upsample import StableDiffusionXLUpsamplingGuidancePipeline
-import numpy as np
+from sdxl_inpaint_upsample import StableDiffusionXLInpaintUpsamplingGuidancePipeline
 import torch
 import torch_xla as xla
-import torch_xla.core.xla_model as xm
-from diffusers import DiffusionPipeline
-import torch.distributed as dist
-import torch.multiprocessing as mp
-import torch_xla.distributed.xla_backend
-from torch_xla import runtime as xr
-import torch_xla.distributed.spmd as xs
-from torch_xla.experimental.spmd_fully_sharded_data_parallel import (
-    SpmdFullyShardedDataParallel as FSDPv2,
-)
-
-import datetime
 import time
 import uuid
 import argparse
-from PIL import Image
 import requests
 from io import BytesIO
 import os
-
-from PIL import Image
-import requests
-import base64
-from io import BytesIO
-
 from vision_process import get_image
 
 
@@ -48,7 +28,7 @@ def main(
 
     device = xla.device()
     # Load the pipeline
-    pipeline = StableDiffusionXLUpsamplingGuidancePipeline.from_pretrained(
+    pipeline = StableDiffusionXLInpaintUpsamplingGuidancePipeline.from_pretrained(
         "KBlueLeaf/Kohaku-XL-Epsilon-rev3",
     ).to(device)
 
@@ -67,15 +47,13 @@ def main(
         negative_prompt=negative_prompt,
         num_inference_steps=num_inference_steps,
         image=init_image,  # Use the initial image for image-to-image generation
+        strength=1,
+        guidance_scale=7.5,
+        guidance_rescale=0.7,
         num_images_per_prompt=num_images_per_prompt,
         height=height,
         width=width,
         generator=generator,
-        time_factor=0.81,
-        scale_factor=scale_factor,
-        us_eta=0.49,
-        guidance_scale=7.5,
-        guidance_rescale=0.7,
     ).images
 
     time_taken = time.time() - start
