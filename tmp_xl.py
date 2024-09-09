@@ -49,7 +49,7 @@ def main(
     device = xla.device()
     # Load the pipeline
     pipeline = StableDiffusionXLUpsamplingGuidancePipeline.from_pretrained(
-        "KBlueLeaf/Kohaku-XL-Epsilon-rev3",
+        "KBlueLeaf/Kohaku-XL-Zeta",
     ).to(device)
 
     init_image = None
