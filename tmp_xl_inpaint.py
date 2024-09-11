@@ -32,38 +32,6 @@ def main(
 
     device = xla.device()
 
-    # Load the safety checker and feature extractor
-    safety_checker = StableDiffusionSafetyChecker.from_pretrained(
-        "CompVis/stable-diffusion-safety-checker"
-    ).to(device)
-    feature_extractor = CLIPFeatureExtractor.from_pretrained(
-        "openai/clip-vit-base-patch32"
-    )
-
-    # Function to check for NSFW content and return a black image if found
-    def check_nsfw_images(
-        images: list[Image.Image], output_type: str | None = "pil"
-    ) -> list[Image.Image]:
-        safety_checker_input = feature_extractor(images, return_tensors="pt").to(device)
-        images_np = [np.array(img) for img in images]
-
-        _, has_nsfw_concepts = safety_checker(
-            images=images_np,
-            clip_input=safety_checker_input.pixel_values.to(device),
-        )
-
-        # Replace NSFW images with black images
-        for i, nsfw in enumerate(has_nsfw_concepts):
-            if nsfw:
-                print(
-                    f"NSFW content detected in image {i}, replacing with black image."
-                )
-                # Create a black image of the same size
-                black_image = Image.new("RGB", images[i].size, color=(0, 0, 0))
-                images[i] = black_image
-
-        return images, any(has_nsfw_concepts)
-
     # Load the pipeline
     pipeline = StableDiffusionXLInpaintUpsamplingGuidancePipeline.from_pretrained(
         "KBlueLeaf/Kohaku-XL-Zeta",
@@ -97,6 +65,37 @@ def main(
     print(f"Total Time: {time_taken}")
 
     del pipeline
+    # Load the safety checker and feature extractor
+    safety_checker = StableDiffusionSafetyChecker.from_pretrained(
+        "CompVis/stable-diffusion-safety-checker"
+    ).to(device)
+    feature_extractor = CLIPFeatureExtractor.from_pretrained(
+        "openai/clip-vit-base-patch32"
+    )
+
+    # Function to check for NSFW content and return a black image if found
+    def check_nsfw_images(
+        images: list[Image.Image], output_type: str | None = "pil"
+    ) -> list[Image.Image]:
+        safety_checker_input = feature_extractor(images, return_tensors="pt").to(device)
+        images_np = [np.array(img) for img in images]
+
+        _, has_nsfw_concepts = safety_checker(
+            images=images_np,
+            clip_input=safety_checker_input.pixel_values.to(device),
+        )
+
+        # Replace NSFW images with black images
+        for i, nsfw in enumerate(has_nsfw_concepts):
+            if nsfw:
+                print(
+                    f"NSFW content detected in image {i}, replacing with black image."
+                )
+                # Create a black image of the same size
+                black_image = Image.new("RGB", images[i].size, color=(0, 0, 0))
+                images[i] = black_image
+
+        return images, any(has_nsfw_concepts)
 
     # Check for NSFW content and replace with black images if necessary
     images, has_nsfw_concepts = check_nsfw_images(images)
