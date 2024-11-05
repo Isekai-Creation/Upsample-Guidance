@@ -1,5 +1,5 @@
 from __future__ import annotations
-
+import os
 import base64
 import math
 from io import BytesIO
@@ -9,7 +9,7 @@ import torch
 from PIL import Image
 from torchvision import io, transforms
 from torchvision.transforms import InterpolationMode
-
+from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
 
 IMAGE_FACTOR = 28
 MIN_PIXELS = 4 * 28 * 28
@@ -249,8 +249,6 @@ def process_vision_info(
     return image_inputs, video_inputs
 
 
-
-
 def get_image(
     image_url=None,
     image=None,
@@ -306,3 +304,55 @@ def get_image(
         image_obj = image_obj.resize((resized_width, resized_height))
 
     return image_obj
+
+
+# set env TCMALLOC_LARGE_ALLOC_REPORT_THRESHOLD
+os.environ["TCMALLOC_LARGE_ALLOC_REPORT_THRESHOLD"] = "99999999999999999999"
+
+
+def get_prompt(message_obj):
+    try:
+
+        model = Qwen2VLForConditionalGeneration.from_pretrained(
+            "Qwen/Qwen2-VL-2B-Instruct",
+            torch_dtype=torch.bfloat16,
+            attn_implementation="eager",
+            device_map="auto",
+        )
+        model.eval()
+
+        max_pixels = 1280 * 28 * 28
+        processor = AutoProcessor.from_pretrained(
+            "Qwen/Qwen2-VL-2B-Instruct-GPTQ-Int4", max_pixels=max_pixels
+        )
+
+        texts = [
+            processor.apply_chat_template(
+                message_obj, tokenize=False, add_generation_prompt=True
+            )
+        ]
+        image_inputs, video_inputs = process_vision_info(message_obj)
+        inputs = processor(
+            text=texts,
+            images=image_inputs,
+            videos=video_inputs,
+            padding=True,
+            return_tensors="pt",
+        )
+
+        # Inference
+        generated_ids = model.generate(**inputs, max_new_tokens=512)
+        generated_ids_trimmed = [
+            out_ids[len(in_ids) :]
+            for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
+        ]
+        output_text = processor.batch_decode(
+            generated_ids_trimmed,
+            skip_special_tokens=True,
+            clean_up_tokenization_spaces=False,
+        )
+        return output_text[0]
+
+    except Exception as e:
+        print(f"Failed to process {message_obj}: {e}")
+        return None

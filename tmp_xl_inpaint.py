@@ -11,7 +11,7 @@ import argparse
 import requests
 from io import BytesIO
 import os
-from vision_process import get_image
+from vision_process import get_image, get_prompt
 from PIL import Image
 
 
@@ -31,6 +31,22 @@ def main(
     start = time.time()
 
     device = xla.device()
+
+    # if no prompt is provided, generate a random prompt
+    if not prompt:
+        message = [
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "image",
+                        "image": image_url,
+                    },
+                    {"type": "text", "text": "Describe this image. In detail."},
+                ],
+            }
+        ]
+        prompt = get_prompt(message)
 
     # Load the pipeline
     pipeline = StableDiffusionXLInpaintUpsamplingGuidancePipeline.from_pretrained(

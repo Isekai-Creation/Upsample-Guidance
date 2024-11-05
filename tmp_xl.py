@@ -95,9 +95,14 @@ def main(
             "nsfw": False,
         }  # Replace with the actual IP if needed
         response = requests.post(f"{SERVER_URL}/image-done", files=files, data=data)
-        print(
-            f"POST request sent to {SERVER_URL} from {ext_ip}, response status: {response.status_code}"
-        )
+        if response.ok:
+            print(
+                f"POST request sent to {SERVER_URL} from {ext_ip}, response status: {response.status_code}"
+            )
+        else:
+            print(
+                f"Failed to upload video. Server responded with status: {response.status_code} - {response.text}"
+            )
 
     else:
         save_dir = os.path.expanduser(save_dir)
