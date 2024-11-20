@@ -11,7 +11,7 @@ from diffusers.pipelines.stable_diffusion_xl.pipeline_output import (
 from loguru import logger
 import PIL.Image
 
-from diffusers.callbacks import  MultiPipelineCallbacks, PipelineCallback
+from diffusers.callbacks import MultiPipelineCallbacks, PipelineCallback
 
 try:
     import numpy as np
@@ -23,6 +23,8 @@ try:
         _prepare_spmd_partition_spec,
         SpmdFullyShardedDataParallel as FSDPv2,
     )
+
+    xr.initialize_cache("/tmp")
 
     xr.use_spmd()
 
@@ -173,8 +175,6 @@ def retrieve_latents(
 class StableDiffusionXLInpaintUpsamplingGuidancePipeline(
     StableDiffusionXLImg2ImgPipeline
 ):
-
-   
 
     def get_timesteps(
         self, num_inference_steps, strength, device, denoising_start=None

@@ -1,11 +1,13 @@
 import inspect
 from typing import Any, Callable, Dict, List, Optional, Union, Tuple
 
-import torch 
+import torch
 from diffusers import StableDiffusionXLPipeline
 from diffusers.image_processor import PipelineImageInput
 from diffusers.utils import deprecate
-from diffusers.pipelines.stable_diffusion_xl.pipeline_output import StableDiffusionXLPipelineOutput
+from diffusers.pipelines.stable_diffusion_xl.pipeline_output import (
+    StableDiffusionXLPipelineOutput,
+)
 from loguru import logger
 import PIL.Image
 
@@ -20,6 +22,8 @@ try:
         _prepare_spmd_partition_spec,
         SpmdFullyShardedDataParallel as FSDPv2,
     )
+
+    xr.initialize_cache("/tmp")
 
     xr.use_spmd()
 
@@ -73,12 +77,16 @@ def rescale_noise_cfg(noise_cfg, noise_pred_text, guidance_rescale=0.0):
     Rescale `noise_cfg` according to `guidance_rescale`. Based on findings of [Common Diffusion Noise Schedules and
     Sample Steps are Flawed](https://arxiv.org/pdf/2305.08891.pdf). See Section 3.4
     """
-    std_text = noise_pred_text.std(dim=list(range(1, noise_pred_text.ndim)), keepdim=True)
+    std_text = noise_pred_text.std(
+        dim=list(range(1, noise_pred_text.ndim)), keepdim=True
+    )
     std_cfg = noise_cfg.std(dim=list(range(1, noise_cfg.ndim)), keepdim=True)
     # rescale the results from guidance (fixes overexposure)
     noise_pred_rescaled = noise_cfg * (std_text / std_cfg)
     # mix with the original results from guidance by factor guidance_rescale to avoid "plain looking" images
-    noise_cfg = guidance_rescale * noise_pred_rescaled + (1 - guidance_rescale) * noise_cfg
+    noise_cfg = (
+        guidance_rescale * noise_pred_rescaled + (1 - guidance_rescale) * noise_cfg
+    )
     return noise_cfg
 
 
@@ -114,9 +122,13 @@ def retrieve_timesteps(
         second element is the number of inference steps.
     """
     if timesteps is not None and sigmas is not None:
-        raise ValueError("Only one of `timesteps` or `sigmas` can be passed. Please choose one to set custom values")
+        raise ValueError(
+            "Only one of `timesteps` or `sigmas` can be passed. Please choose one to set custom values"
+        )
     if timesteps is not None:
-        accepts_timesteps = "timesteps" in set(inspect.signature(scheduler.set_timesteps).parameters.keys())
+        accepts_timesteps = "timesteps" in set(
+            inspect.signature(scheduler.set_timesteps).parameters.keys()
+        )
         if not accepts_timesteps:
             raise ValueError(
                 f"The current scheduler class {scheduler.__class__}'s `set_timesteps` does not support custom"
@@ -126,7 +138,9 @@ def retrieve_timesteps(
         timesteps = scheduler.timesteps
         num_inference_steps = len(timesteps)
     elif sigmas is not None:
-        accept_sigmas = "sigmas" in set(inspect.signature(scheduler.set_timesteps).parameters.keys())
+        accept_sigmas = "sigmas" in set(
+            inspect.signature(scheduler.set_timesteps).parameters.keys()
+        )
         if not accept_sigmas:
             raise ValueError(
                 f"The current scheduler class {scheduler.__class__}'s `set_timesteps` does not support custom"
@@ -143,7 +157,9 @@ def retrieve_timesteps(
 
 # Copied from diffusers.pipelines.stable_diffusion.pipeline_stable_diffusion_img2img.retrieve_latents
 def retrieve_latents(
-    encoder_output: torch.Tensor, generator: Optional[torch.Generator] = None, sample_mode: str = "sample"
+    encoder_output: torch.Tensor,
+    generator: Optional[torch.Generator] = None,
+    sample_mode: str = "sample",
 ):
     if hasattr(encoder_output, "latent_dist") and sample_mode == "sample":
         return encoder_output.latent_dist.sample(generator)
@@ -158,17 +174,31 @@ def retrieve_latents(
 class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
 
     def prepare_latents_wth_image(
-        self, image, timestep, batch_size, num_images_per_prompt, dtype, device, generator=None, add_noise=True
+        self,
+        image,
+        timestep,
+        batch_size,
+        num_images_per_prompt,
+        dtype,
+        device,
+        generator=None,
+        add_noise=True,
     ):
         if not isinstance(image, (torch.Tensor, PIL.Image.Image, list)):
             raise ValueError(
-                    f"`image` has to be of type `torch.Tensor`, `PIL.Image.Image` or list but is {type(image)}"
-                )
+                f"`image` has to be of type `torch.Tensor`, `PIL.Image.Image` or list but is {type(image)}"
+            )
 
         latents_mean = latents_std = None
-        if hasattr(self.vae.config, "latents_mean") and self.vae.config.latents_mean is not None:
+        if (
+            hasattr(self.vae.config, "latents_mean")
+            and self.vae.config.latents_mean is not None
+        ):
             latents_mean = torch.tensor(self.vae.config.latents_mean).view(1, 4, 1, 1)
-        if hasattr(self.vae.config, "latents_std") and self.vae.config.latents_std is not None:
+        if (
+            hasattr(self.vae.config, "latents_std")
+            and self.vae.config.latents_std is not None
+        ):
             latents_std = torch.tensor(self.vae.config.latents_std).view(1, 4, 1, 1)
 
         # Offload text encoder if `enable_model_cpu_offload` was enabled
@@ -191,25 +221,29 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
 
             if isinstance(generator, list) and len(generator) != batch_size:
                 raise ValueError(
-                        f"You have passed a list of generators of length {len(generator)}, but requested an effective batch"
-                        f" size of {batch_size}. Make sure the batch size matches the length of the generators."
-                    )
+                    f"You have passed a list of generators of length {len(generator)}, but requested an effective batch"
+                    f" size of {batch_size}. Make sure the batch size matches the length of the generators."
+                )
 
             elif isinstance(generator, list):
                 if image.shape[0] < batch_size and batch_size % image.shape[0] == 0:
                     image = torch.cat([image] * (batch_size // image.shape[0]), dim=0)
                 elif image.shape[0] < batch_size and batch_size % image.shape[0] != 0:
                     raise ValueError(
-                            f"Cannot duplicate `image` of batch size {image.shape[0]} to effective batch_size {batch_size} "
-                        )
+                        f"Cannot duplicate `image` of batch size {image.shape[0]} to effective batch_size {batch_size} "
+                    )
 
                 init_latents = [
-                        retrieve_latents(self.vae.encode(image[i : i + 1]), generator=generator[i])
-                        for i in range(batch_size)
-                    ]
+                    retrieve_latents(
+                        self.vae.encode(image[i : i + 1]), generator=generator[i]
+                    )
+                    for i in range(batch_size)
+                ]
                 init_latents = torch.cat(init_latents, dim=0)
             else:
-                init_latents = retrieve_latents(self.vae.encode(image), generator=generator)
+                init_latents = retrieve_latents(
+                    self.vae.encode(image), generator=generator
+                )
 
             if self.vae.config.force_upcast:
                 self.vae.to(dtype)
@@ -218,18 +252,30 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
             if latents_mean is not None and latents_std is not None:
                 latents_mean = latents_mean.to(device=device, dtype=dtype)
                 latents_std = latents_std.to(device=device, dtype=dtype)
-                init_latents = (init_latents - latents_mean) * self.vae.config.scaling_factor / latents_std
+                init_latents = (
+                    (init_latents - latents_mean)
+                    * self.vae.config.scaling_factor
+                    / latents_std
+                )
             else:
                 init_latents = self.vae.config.scaling_factor * init_latents
 
-        if batch_size > init_latents.shape[0] and batch_size % init_latents.shape[0] == 0:
+        if (
+            batch_size > init_latents.shape[0]
+            and batch_size % init_latents.shape[0] == 0
+        ):
             # expand init_latents for batch_size
             additional_image_per_prompt = batch_size // init_latents.shape[0]
-            init_latents = torch.cat([init_latents] * additional_image_per_prompt, dim=0)
-        elif batch_size > init_latents.shape[0] and batch_size % init_latents.shape[0] != 0:
+            init_latents = torch.cat(
+                [init_latents] * additional_image_per_prompt, dim=0
+            )
+        elif (
+            batch_size > init_latents.shape[0]
+            and batch_size % init_latents.shape[0] != 0
+        ):
             raise ValueError(
-                    f"Cannot duplicate `image` of batch size {init_latents.shape[0]} to {batch_size} text prompts."
-                )
+                f"Cannot duplicate `image` of batch size {init_latents.shape[0]} to {batch_size} text prompts."
+            )
         else:
             init_latents = torch.cat([init_latents], dim=0)
 
@@ -243,10 +289,14 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
 
         return latents
 
-    def get_timesteps(self, num_inference_steps, strength, device, denoising_start=None):
+    def get_timesteps(
+        self, num_inference_steps, strength, device, denoising_start=None
+    ):
         # get the original timestep using init_timestep
         if denoising_start is None:
-            init_timestep = min(int(num_inference_steps * strength), num_inference_steps)
+            init_timestep = min(
+                int(num_inference_steps * strength), num_inference_steps
+            )
             t_start = max(num_inference_steps - init_timestep, 0)
         else:
             t_start = 0
@@ -279,13 +329,17 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
 
         return timesteps, num_inference_steps - t_start
 
-    def upsampling(self, img: torch.Tensor, scale_factor: int = 2, mode: str = "nearest"):
+    def upsampling(
+        self, img: torch.Tensor, scale_factor: int = 2, mode: str = "nearest"
+    ):
         # mode: nearest, bilinear
         upsample_model = torch.nn.Upsample(scale_factor=scale_factor, mode=mode)
         return upsample_model(img)
 
     def downsampling(self, img: torch.Tensor, scale_factor: int = 2):
-        downsampl_model = torch.nn.AvgPool2d(kernel_size=(scale_factor, scale_factor), stride=scale_factor)
+        downsampl_model = torch.nn.AvgPool2d(
+            kernel_size=(scale_factor, scale_factor), stride=scale_factor
+        )
         return downsampl_model(img)
 
     def find_closest_index(self, alphas_cum_prod, tau):
@@ -305,13 +359,14 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
         # alphas: cumprod of alpha
         # alphas = torch.sqrt(alphas)
         snr = alphas / (1 - alphas)
-        snr_low = alphas / (1 - alphas) * scale_factor ** 2
+        snr_low = alphas / (1 - alphas) * scale_factor**2
         log_snr, log_snr_low = torch.log(snr), torch.log(snr_low)
 
         def get_single_match(t):
             differences = torch.abs(log_snr_low[t] - log_snr)
             tau = torch.argmin(differences)
             return tau
+
         return [get_single_match(t) for t in range(len(alphas))]
 
     @torch.no_grad()
@@ -319,7 +374,7 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
         self,
         prompt: Union[str, List[str]] = None,
         prompt_2: Optional[Union[str, List[str]]] = None,
-        image = None,
+        image=None,
         height: Optional[int] = None,
         width: Optional[int] = None,
         time_factor: float = 1.2,
@@ -509,7 +564,7 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
         mesh_shape = (num_devices // 1, 1)
         device_ids = np.array(range(num_devices))
         # To be noted, the mesh must have an axis named 'fsdp', which the weights and activations will be sharded on.
-        mesh = xs.Mesh(device_ids, mesh_shape, ('fsdp', 'model'))
+        mesh = xs.Mesh(device_ids, mesh_shape, ("fsdp", "model"))
         xs.set_global_mesh(mesh)
 
         self.unet = FSDPv2(self.unet)
@@ -576,7 +631,9 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
 
         # 3. Encode input prompt
         lora_scale = (
-            self.cross_attention_kwargs.get("scale", None) if self.cross_attention_kwargs is not None else None
+            self.cross_attention_kwargs.get("scale", None)
+            if self.cross_attention_kwargs is not None
+            else None
         )
 
         (
@@ -601,7 +658,9 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
         )
 
         # 4. Prepare timesteps
-        timesteps, num_inference_steps = retrieve_timesteps(self.scheduler, num_inference_steps, device, timesteps, sigmas)
+        timesteps, num_inference_steps = retrieve_timesteps(
+            self.scheduler, num_inference_steps, device, timesteps, sigmas
+        )
 
         # 5. Prepare latent variables
         num_channels_latents = self.unet.config.in_channels
@@ -647,12 +706,16 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
 
         if self.do_classifier_free_guidance:
             prompt_embeds = torch.cat([negative_prompt_embeds, prompt_embeds], dim=0)
-            add_text_embeds = torch.cat([negative_pooled_prompt_embeds, add_text_embeds], dim=0)
+            add_text_embeds = torch.cat(
+                [negative_pooled_prompt_embeds, add_text_embeds], dim=0
+            )
             add_time_ids = torch.cat([negative_add_time_ids, add_time_ids], dim=0)
 
         prompt_embeds = prompt_embeds.to(device)
         add_text_embeds = add_text_embeds.to(device)
-        add_time_ids = add_time_ids.to(device).repeat(batch_size * num_images_per_prompt, 1)
+        add_time_ids = add_time_ids.to(device).repeat(
+            batch_size * num_images_per_prompt, 1
+        )
 
         if ip_adapter_image is not None or ip_adapter_image_embeds is not None:
             image_embeds = self.prepare_ip_adapter_image_embeds(
@@ -664,7 +727,9 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
             )
 
         # 8. Denoising loop
-        num_warmup_steps = max(len(timesteps) - num_inference_steps * self.scheduler.order, 0)
+        num_warmup_steps = max(
+            len(timesteps) - num_inference_steps * self.scheduler.order, 0
+        )
 
         # 8.1 Apply denoising_end
         if (
@@ -679,13 +744,17 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
                     - (self.denoising_end * self.scheduler.config.num_train_timesteps)
                 )
             )
-            num_inference_steps = len(list(filter(lambda ts: ts >= discrete_timestep_cutoff, timesteps)))
+            num_inference_steps = len(
+                list(filter(lambda ts: ts >= discrete_timestep_cutoff, timesteps))
+            )
             timesteps = timesteps[:num_inference_steps]
 
         # 9. Optionally get Guidance Scale Embedding
         timestep_cond = None
         if self.unet.config.time_cond_proj_dim is not None:
-            guidance_scale_tensor = torch.tensor(self.guidance_scale - 1).repeat(batch_size * num_images_per_prompt)
+            guidance_scale_tensor = torch.tensor(self.guidance_scale - 1).repeat(
+                batch_size * num_images_per_prompt
+            )
             timestep_cond = self.get_guidance_scale_embedding(
                 guidance_scale_tensor, embedding_dim=self.unet.config.time_cond_proj_dim
             ).to(device=device, dtype=latents.dtype)
@@ -702,8 +771,14 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
                     continue
 
                 # expand the latents if we are doing classifier free guidance
-                latent_model_input = torch.cat([latents] * 2) if self.do_classifier_free_guidance else latents
-                latent_model_input = self.scheduler.scale_model_input(latent_model_input, t)
+                latent_model_input = (
+                    torch.cat([latents] * 2)
+                    if self.do_classifier_free_guidance
+                    else latents
+                )
+                latent_model_input = self.scheduler.scale_model_input(
+                    latent_model_input, t
+                )
 
                 xs.mark_sharding(
                     latent_model_input,
@@ -713,13 +788,19 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
 
                 if m > 1:
 
-                    d_latent_model_input = torch.cat([self.downsampling(latents, m)] * 2) if self.do_classifier_free_guidance else self.downsampling(latents, m)
+                    d_latent_model_input = (
+                        torch.cat([self.downsampling(latents, m)] * 2)
+                        if self.do_classifier_free_guidance
+                        else self.downsampling(latents, m)
+                    )
                     a_t = self.scheduler.alphas_cumprod[t.long()]
-                    p = a_t + (1 - a_t) / (m ** 2)
-                    p_factor = 1 / (p ** 0.5)
+                    p = a_t + (1 - a_t) / (m**2)
+                    p_factor = 1 / (p**0.5)
                     tau = taus[t.long().item()].to(t.device)
 
-                    d_latent_model_input = self.scheduler.scale_model_input(d_latent_model_input, tau)
+                    d_latent_model_input = self.scheduler.scale_model_input(
+                        d_latent_model_input, tau
+                    )
 
                     xs.mark_sharding(
                         d_latent_model_input,
@@ -728,8 +809,14 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
                     )
 
                     # predict the noise residual
-                    added_cond_kwargs = {"text_embeds": add_text_embeds, "time_ids": add_time_ids}
-                    if ip_adapter_image is not None or ip_adapter_image_embeds is not None:
+                    added_cond_kwargs = {
+                        "text_embeds": add_text_embeds,
+                        "time_ids": add_time_ids,
+                    }
+                    if (
+                        ip_adapter_image is not None
+                        or ip_adapter_image_embeds is not None
+                    ):
                         added_cond_kwargs["image_embeds"] = image_embeds
 
                     noise_pred = self.unet(
@@ -745,7 +832,7 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
                     # predict the nosie residual
                     d_noise_pred = self.unet(
                         d_latent_model_input * p_factor,
-                        tau, 
+                        tau,
                         encoder_hidden_states=prompt_embeds,
                         timestep_cond=timestep_cond,
                         cross_attention_kwargs=self.cross_attention_kwargs,
@@ -753,15 +840,27 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
                         return_dict=False,
                     )[0]
 
-                    noise_adj = self.upsampling(d_noise_pred/m, scale_factor=scale_factor) + noise_pred - self.upsampling(self.downsampling(noise_pred))
-                    us_wt = time_factor * torch.heaviside(t - (1 - us_eta) * 1000, torch.tensor(0.0).to(t.device))
+                    noise_adj = (
+                        self.upsampling(d_noise_pred / m, scale_factor=scale_factor)
+                        + noise_pred
+                        - self.upsampling(self.downsampling(noise_pred))
+                    )
+                    us_wt = time_factor * torch.heaviside(
+                        t - (1 - us_eta) * 1000, torch.tensor(0.0).to(t.device)
+                    )
                     noise_pred = (1 - us_wt) * noise_pred + us_wt * noise_adj
 
                 else:
 
                     # predict the noise residual
-                    added_cond_kwargs = {"text_embeds": add_text_embeds, "time_ids": add_time_ids}
-                    if ip_adapter_image is not None or ip_adapter_image_embeds is not None:
+                    added_cond_kwargs = {
+                        "text_embeds": add_text_embeds,
+                        "time_ids": add_time_ids,
+                    }
+                    if (
+                        ip_adapter_image is not None
+                        or ip_adapter_image_embeds is not None
+                    ):
                         added_cond_kwargs["image_embeds"] = image_embeds
 
                     noise_pred = self.unet(
@@ -777,14 +876,22 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
                 # perform guidance
                 if self.do_classifier_free_guidance:
                     noise_pred_uncond, noise_pred_text = noise_pred.chunk(2)
-                    noise_pred = noise_pred_uncond + self.guidance_scale * (noise_pred_text - noise_pred_uncond)
+                    noise_pred = noise_pred_uncond + self.guidance_scale * (
+                        noise_pred_text - noise_pred_uncond
+                    )
 
                 if self.do_classifier_free_guidance and self.guidance_rescale > 0.0:
                     # Based on 3.4. in https://arxiv.org/pdf/2305.08891.pdf
-                    noise_pred = rescale_noise_cfg(noise_pred, noise_pred_text, guidance_rescale=self.guidance_rescale)
+                    noise_pred = rescale_noise_cfg(
+                        noise_pred,
+                        noise_pred_text,
+                        guidance_rescale=self.guidance_rescale,
+                    )
 
                 # compute the previous noisy sample x_t -> x_t-1
-                latents = self.scheduler.step(noise_pred, t, latents, **extra_step_kwargs, return_dict=False)[0]
+                latents = self.scheduler.step(
+                    noise_pred, t, latents, **extra_step_kwargs, return_dict=False
+                )[0]
 
                 if callback_on_step_end is not None:
                     callback_kwargs = {}
@@ -794,10 +901,14 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
 
                     latents = callback_outputs.pop("latents", latents)
                     prompt_embeds = callback_outputs.pop("prompt_embeds", prompt_embeds)
-                    negative_prompt_embeds = callback_outputs.pop("negative_prompt_embeds", negative_prompt_embeds)
+                    negative_prompt_embeds = callback_outputs.pop(
+                        "negative_prompt_embeds", negative_prompt_embeds
+                    )
 
                 # call the callback, if provided
-                if i == len(timesteps) - 1 or ((i + 1) > num_warmup_steps and (i + 1) % self.scheduler.order == 0):
+                if i == len(timesteps) - 1 or (
+                    (i + 1) > num_warmup_steps and (i + 1) % self.scheduler.order == 0
+                ):
                     progress_bar.update()
                     if callback is not None and i % callback_steps == 0:
                         step_idx = i // getattr(self.scheduler, "order", 1)
@@ -805,16 +916,20 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
 
                 print(f"Mark checkpoint {i} {t}")
 
-                if XLA_AVAILABLE: 
+                if XLA_AVAILABLE:
                     xla.sync()
 
         if not output_type == "latent":
             # make sure the VAE is in float32 mode, as it overflows in float16
-            needs_upcasting = self.vae.dtype == torch.float16 and self.vae.config.force_upcast
+            needs_upcasting = (
+                self.vae.dtype == torch.float16 and self.vae.config.force_upcast
+            )
 
             if needs_upcasting:
                 self.upcast_vae()
-                latents = latents.to(next(iter(self.vae.post_quant_conv.parameters())).dtype)
+                latents = latents.to(
+                    next(iter(self.vae.post_quant_conv.parameters())).dtype
+                )
             elif latents.dtype != self.vae.dtype:
                 if torch.backends.mps.is_available():
                     # some platforms (eg. apple mps) misbehave due to a pytorch bug: https://github.com/pytorch/pytorch/pull/99272
@@ -822,16 +937,29 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
 
             # unscale/denormalize the latents
             # denormalize with the mean and std if available and not None
-            has_latents_mean = hasattr(self.vae.config, "latents_mean") and self.vae.config.latents_mean is not None
-            has_latents_std = hasattr(self.vae.config, "latents_std") and self.vae.config.latents_std is not None
+            has_latents_mean = (
+                hasattr(self.vae.config, "latents_mean")
+                and self.vae.config.latents_mean is not None
+            )
+            has_latents_std = (
+                hasattr(self.vae.config, "latents_std")
+                and self.vae.config.latents_std is not None
+            )
             if has_latents_mean and has_latents_std:
                 latents_mean = (
-                    torch.tensor(self.vae.config.latents_mean).view(1, 4, 1, 1).to(latents.device, latents.dtype)
+                    torch.tensor(self.vae.config.latents_mean)
+                    .view(1, 4, 1, 1)
+                    .to(latents.device, latents.dtype)
                 )
                 latents_std = (
-                    torch.tensor(self.vae.config.latents_std).view(1, 4, 1, 1).to(latents.device, latents.dtype)
+                    torch.tensor(self.vae.config.latents_std)
+                    .view(1, 4, 1, 1)
+                    .to(latents.device, latents.dtype)
                 )
-                latents = latents * latents_std / self.vae.config.scaling_factor + latents_mean
+                latents = (
+                    latents * latents_std / self.vae.config.scaling_factor
+                    + latents_mean
+                )
             else:
                 latents = latents / self.vae.config.scaling_factor
 
@@ -846,9 +974,9 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
         del self.unet
 
         if not output_type == "latent":
-            """ # apply watermark if available
+            """# apply watermark if available
             if self.watermark is not None:
-                image = self.watermark.apply_watermark(image) """
+                image = self.watermark.apply_watermark(image)"""
 
             image = self.image_processor.postprocess(image, output_type=output_type)
 
