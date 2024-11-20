@@ -119,7 +119,7 @@ def main(
                 (
                     "files",
                     (
-                        f"remaining_images_{uuid.uuid4()}_{seed}.zip",
+                        f"{uuid.uuid4()}_{seed}.zip",
                         zip_bytes,
                         "application/zip",
                     ),
@@ -133,6 +133,7 @@ def main(
             "seed": seed,
             "prompt": prompt,
             "nsfw": False,
+            "count": num_images_to_send,
             "zip": num_images_to_send > 8,
         }  # Replace with the actual IP if needed
         response = requests.post(f"{SERVER_URL}/image-done", files=files, data=data)
