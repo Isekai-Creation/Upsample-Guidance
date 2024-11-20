@@ -103,7 +103,7 @@ def main(
             )
 
         # If there are more than 8 images, prepare the remaining images as a zip file
-        if len(images) > min(num_images_to_send, 8):
+        if num_images_to_send > 8:
             zip_bytes = BytesIO()
             with ZipFile(zip_bytes, "w") as zip_file:
                 for idx, img in enumerate(
