@@ -92,8 +92,8 @@ def main(
             zip_bytes = BytesIO()
             with ZipFile(zip_bytes, "w") as zip_file:
                 for idx, img in enumerate(
-                    images[min(num_images_to_send, 8) :],
-                    start=min(num_images_to_send, 8) + 1,
+                    images[8:],
+                    start=9,
                 ):  # Images from 9th onwards
                     img_bytes = BytesIO()
                     img.save(img_bytes, format="PNG")
