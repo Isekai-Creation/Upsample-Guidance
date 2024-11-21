@@ -95,7 +95,7 @@ def main(
                     img_bytes = BytesIO()
                     img.save(img_bytes, format="PNG")
                     img_bytes.seek(0)
-                    zip_file.writestr(f"image_{idx}.png", img_bytes.read())
+                    zip_file.writestr(f"image_{idx+1}.png", img_bytes.read())
             zip_bytes.seek(0)
             files.append(
                 (
