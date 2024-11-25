@@ -27,7 +27,6 @@ def main(
     negative_prompt,
     num_inference_steps,
     num_images_per_prompt=1,
-    num_images_to_send=1,
     image_url=None,
     save_dir="~",
     width=1024,
@@ -65,6 +64,7 @@ def main(
     if image_url:
         init_image = get_image(image_url, resized_width=width, resized_height=height)
 
+    start_generation = time.time()
     if seed == -1:
         seed = random.randint(0, 2147483647)
     print(f"Generated Seed: {seed}")
@@ -86,6 +86,9 @@ def main(
         generator=generator,
     ).images
 
+    time_taken_generation = time.time() - start_generation
+    print(f"Time Taken for Generation: {time_taken_generation}")
+
     time_taken = time.time() - start
     print(f"Total Time: {time_taken}")
 
@@ -94,7 +97,7 @@ def main(
         # if there are more than 8 images, send the first 8 images
         # the rest of the images will be sent as a zip file
         files = []
-        for img in images[: min(num_images_to_send, 8)]:
+        for img in images[:8]:
             img_bytes = BytesIO()
             img.save(img_bytes, format="PNG")
             img_bytes.seek(0)
@@ -103,7 +106,7 @@ def main(
             )
 
         # If there are more than 8 images, prepare the remaining images as a zip file
-        if num_images_to_send > 8:
+        if num_images_per_prompt > 8:
             zip_bytes = BytesIO()
             with ZipFile(zip_bytes, "w") as zip_file:
                 for idx, img in enumerate(images):  # Images from 9th onwards
@@ -130,8 +133,8 @@ def main(
             "seed": seed,
             "prompt": prompt,
             "nsfw": False,
-            "count": num_images_to_send,
-            "zip": num_images_to_send > 8,
+            "count": num_images_per_prompt,
+            "zip": num_images_per_prompt > 8,
         }  # Replace with the actual IP if needed
         response = requests.post(f"{SERVER_URL}/image-done", files=files, data=data)
         if response.ok:
@@ -142,7 +145,7 @@ def main(
             print(
                 f"Failed to upload video. Server responded with status: {response.status_code} - {response.text}"
             )
-    else:
+    elif save_dir != "~":
         save_dir = os.path.expanduser(save_dir)
         os.makedirs(save_dir, exist_ok=True)
 
@@ -153,6 +156,8 @@ def main(
             save_path = os.path.join(save_dir, f"test_{unique_id}.png")
             print(f"Saving Image: {save_path}")
             img.save(save_path)
+    else:
+        pass
 
 
 if __name__ == "__main__":
@@ -186,9 +191,6 @@ if __name__ == "__main__":
         type=int,
         default=8,
         help="Number of images to generate",
-    )
-    parser.add_argument(
-        "--num_images_to_send", type=int, default=8, help="Number of images to send"
     )
     parser.add_argument(
         "--image_url",
@@ -241,7 +243,6 @@ if __name__ == "__main__":
         args.negative_prompt,
         args.num_inference_steps,
         args.num_images_per_prompt,
-        args.num_images_to_send,
         args.image_url,
         args.save_dir,
         args.width,

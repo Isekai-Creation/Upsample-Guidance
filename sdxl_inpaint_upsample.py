@@ -28,6 +28,13 @@ try:
 
     xr.use_spmd()
 
+    num_devices = xr.global_runtime_device_count()
+    mesh_shape = (num_devices // 1, 1)
+    device_ids = np.array(range(num_devices))
+    # To be noted, the mesh must have an axis named 'fsdp', which the weights and activations will be sharded on.
+    mesh = xs.Mesh(device_ids, mesh_shape, ("fsdp", "model"))
+    xs.set_global_mesh(mesh)
+
     print("_________________________XLA is Available!")
     XLA_AVAILABLE = True
 except:
@@ -448,14 +455,8 @@ class StableDiffusionXLInpaintUpsamplingGuidancePipeline(
             `tuple`. When returning a tuple, the first element is a list with the generated images.
         """
 
-        num_devices = xr.global_runtime_device_count()
-        mesh_shape = (num_devices // 1, 1)
-        device_ids = np.array(range(num_devices))
-        # To be noted, the mesh must have an axis named 'fsdp', which the weights and activations will be sharded on.
-        mesh = xs.Mesh(device_ids, mesh_shape, ("fsdp", "model"))
-        xs.set_global_mesh(mesh)
-
         self.unet = FSDPv2(self.unet)
+        self.vae = FSDPv2(self.vae)
 
         callback = kwargs.pop("callback", None)
         callback_steps = kwargs.pop("callback_steps", None)
@@ -693,7 +694,9 @@ class StableDiffusionXLInpaintUpsamplingGuidancePipeline(
                 xs.mark_sharding(
                     latent_model_input,
                     xs.get_global_mesh(),
-                    _prepare_spmd_partition_spec(latent_model_input),
+                    _prepare_spmd_partition_spec(
+                        latent_model_input, shard_maximal=False
+                    ),
                 )
 
                 # predict the noise residual
@@ -764,15 +767,12 @@ class StableDiffusionXLInpaintUpsamplingGuidancePipeline(
                 if i == len(timesteps) - 1 or (
                     (i + 1) > num_warmup_steps and (i + 1) % self.scheduler.order == 0
                 ):
+                    print(f"Mark checkpoint {i} {t}")
+                    xla.sync()
                     progress_bar.update()
                     if callback is not None and i % callback_steps == 0:
                         step_idx = i // getattr(self.scheduler, "order", 1)
                         callback(step_idx, t, latents)
-
-                print(f"Mark checkpoint {i} {t}")
-
-                if XLA_AVAILABLE:
-                    xla.sync()
 
         if not output_type == "latent":
             # make sure the VAE is in float32 mode, as it overflows in float16
@@ -826,7 +826,7 @@ class StableDiffusionXLInpaintUpsamplingGuidancePipeline(
         else:
             image = latents
 
-        del self.unet
+        # del self.unet
 
         # apply watermark if available
         if self.watermark is not None:

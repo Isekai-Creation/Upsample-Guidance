@@ -7,6 +7,7 @@ from diffusers.pipelines.stable_diffusion import StableDiffusionSafetyChecker
 from transformers import CLIPFeatureExtractor
 import random
 from sdxl_upsample import StableDiffusionXLUpsamplingGuidancePipeline
+from diffusers import EulerDiscreteScheduler
 import torch
 import torch_xla as xla
 from zipfile import ZipFile
@@ -17,6 +18,7 @@ import requests
 from io import BytesIO
 
 from vision_process import get_image
+from huggingface_hub import hf_hub_download
 
 
 def main(
@@ -26,6 +28,7 @@ def main(
     negative_prompt,
     num_inference_steps,
     num_images_per_prompt=1,
+    num_images_to_send=1,
     image_url=None,
     save_dir="~",
     width=1024,
@@ -43,11 +46,20 @@ def main(
         model,
     ).to(device)
 
+    repo = "ByteDance/SDXL-Lightning"
+    ckpt = f"sdxl_lightning_{num_inference_steps}step_lora.safetensors"  # Use the correct ckpt for your step setting!
+
+    pipeline.load_lora_weights(hf_hub_download(repo, ckpt))
+
+    # Ensure sampler uses "trailing" timesteps.
+    pipeline.scheduler = EulerDiscreteScheduler.from_config(
+        pipeline.scheduler.config, timestep_spacing="trailing"
+    )
+
     init_image = None
     if image_url:
         init_image = get_image(image_url, resized_width=width, resized_height=height)
 
-    start_generation = time.time()
     if seed == -1:
         seed = random.randint(0, 2147483647)
     print(f"Generated Seed: {seed}")
@@ -67,12 +79,9 @@ def main(
         time_factor=0.81,
         scale_factor=scale_factor,
         us_eta=0.49,
-        guidance_scale=7.5,
+        guidance_scale=0,
         guidance_rescale=0.7,
     ).images
-
-    time_taken_generation = time.time() - start_generation
-    print(f"Time Taken for Generation: {time_taken_generation}")
 
     time_taken = time.time() - start
     print(f"Total Time: {time_taken}")
@@ -82,7 +91,7 @@ def main(
         # if there are more than 8 images, send the first 8 images
         # the rest of the images will be sent as a zip file
         files = []
-        for img in images[:8]:
+        for img in images[: min(num_images_to_send, 8)]:
             img_bytes = BytesIO()
             img.save(img_bytes, format="PNG")
             img_bytes.seek(0)
@@ -91,7 +100,7 @@ def main(
             )
 
         # If there are more than 8 images, prepare the remaining images as a zip file
-        if num_images_per_prompt > 8:
+        if num_images_to_send > 8:
             zip_bytes = BytesIO()
             with ZipFile(zip_bytes, "w") as zip_file:
                 for idx, img in enumerate(images):  # Images from 9th onwards
@@ -118,8 +127,8 @@ def main(
             "seed": seed,
             "prompt": prompt,
             "nsfw": False,
-            "count": num_images_per_prompt,
-            "zip": num_images_per_prompt > 8,
+            "count": num_images_to_send,
+            "zip": num_images_to_send > 8,
         }  # Replace with the actual IP if needed
         response = requests.post(f"{SERVER_URL}/image-done", files=files, data=data)
         if response.ok:
@@ -131,7 +140,7 @@ def main(
                 f"Failed to upload video. Server responded with status: {response.status_code} - {response.text}"
             )
 
-    elif save_dir != "~":
+    else:
         save_dir = os.path.expanduser(save_dir)
         os.makedirs(save_dir, exist_ok=True)
 
@@ -142,8 +151,6 @@ def main(
             save_path = os.path.join(save_dir, f"test_{unique_id}.png")
             print(f"Saving Image: {save_path}")
             img.save(save_path)
-    else:
-        pass
 
     # send a request to the server url /image-done endpoint, upload the images to the server
 
@@ -180,6 +187,10 @@ if __name__ == "__main__":
         default=8,
         help="Number of images to generate",
     )
+    parser.add_argument(
+        "--num_images_to_send", type=int, default=8, help="Number of images to send"
+    )
+
     parser.add_argument(
         "--image_url",
         type=str,
@@ -231,6 +242,7 @@ if __name__ == "__main__":
         args.negative_prompt,
         args.num_inference_steps,
         args.num_images_per_prompt,
+        args.num_images_to_send,
         args.image_url,
         args.save_dir,
         args.width,
