@@ -37,11 +37,14 @@ def main(
     start = time.time()
 
     device = xla.device()
+    dtype = torch.bfloat16 if num_images_per_prompt == 64 else torch.float32
 
     # Load the pipeline
     pipeline = StableDiffusionXLUpsamplingGuidancePipeline.from_pretrained(
-        model,
+        model, torch_dtype=dtype
     ).to(device)
+
+    print(f"Model dtype: {pipeline.dtype}")
 
     init_image = None
     if image_url:

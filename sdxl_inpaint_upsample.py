@@ -828,16 +828,37 @@ class StableDiffusionXLInpaintUpsamplingGuidancePipeline(
 
         # del self.unet
 
-        # apply watermark if available
-        if self.watermark is not None:
-            image = self.watermark.apply_watermark(image)
+        import time
 
-        image = self.image_processor.postprocess(image, output_type=output_type)
+        decode_time = time.time()
+
+        if not output_type == "latent":
+            """# apply watermark if available
+            if self.watermark is not None:
+                image = self.watermark.apply_watermark(image)"""
+
+            print("Image shape:", image.shape)
+            print("Image dtype:", image.dtype)
+            # if first dimension is greater than 16 and dtype bfloat16, we have to split the first dimension by 16
+            # res = self.image_processor.postprocess(image, output_type=output_type)
+            if image.dtype == torch.bfloat16 and image.shape[0] > 16:
+                res = []
+                for i in range(0, image.shape[0], 16):
+                    print("Decode Processing:", i)
+                    img = image[i : i + 16]
+                    res.extend(
+                        self.image_processor.postprocess(img, output_type=output_type)
+                    )
+                    xla.sync()
+            else:
+                res = self.image_processor.postprocess(image, output_type=output_type)
+
+        print("Decode Time:", time.time() - decode_time)
 
         # Offload all models
         self.maybe_free_model_hooks()
 
         if not return_dict:
-            return (image,)
+            return (res,)
 
-        return StableDiffusionXLPipelineOutput(images=image)
+        return StableDiffusionXLPipelineOutput(images=res)
