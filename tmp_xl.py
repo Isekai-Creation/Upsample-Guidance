@@ -1,10 +1,12 @@
 import os
+from transformers import CLIPFeatureExtractor
+from transformers.utils.hub import move_cache
 
 # SET env HF_HOME
 os.environ["HF_HOME"] = "/dev/shm"
+os.environ["TRANSFORMERS_CACHE"] = "/dev/shm"
 
 from diffusers.pipelines.stable_diffusion import StableDiffusionSafetyChecker
-from transformers import CLIPFeatureExtractor
 import random
 from sdxl_upsample import StableDiffusionXLUpsamplingGuidancePipeline
 import torch
