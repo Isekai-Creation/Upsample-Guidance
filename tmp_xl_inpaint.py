@@ -38,7 +38,7 @@ def main(
     start = time.time()
 
     device = xla.device()
-    dtype = torch.bfloat16 if num_images_per_prompt == 64 else torch.float32
+    dtype = torch.bfloat16 if num_images_per_prompt >= 64 else torch.float32
 
     # if no prompt is provided, generate a random prompt
     if not prompt:

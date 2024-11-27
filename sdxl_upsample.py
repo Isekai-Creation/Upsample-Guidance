@@ -989,11 +989,12 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
             print("Image dtype:", image.dtype)
             # if first dimension is greater than 16 and dtype bfloat16, we have to split the first dimension by 16
             # res = self.image_processor.postprocess(image, output_type=output_type)
-            if image.dtype == torch.bfloat16 and image.shape[0] > 16:
+            image_batch = 16
+            if image.dtype == torch.bfloat16 and image.shape[0] > image_batch:
                 res = []
-                for i in range(0, image.shape[0], 16):
+                for i in range(0, image.shape[0], image_batch):
                     print("Decode Processing:", i)
-                    img = image[i : i + 16]
+                    img = image[i : i + image_batch]
                     res.extend(
                         self.image_processor.postprocess(img, output_type=output_type)
                     )

@@ -37,14 +37,12 @@ def main(
     start = time.time()
 
     device = xla.device()
-    dtype = torch.bfloat16 if num_images_per_prompt == 64 else torch.float32
+    dtype = torch.bfloat16 if num_images_per_prompt >= 64 else torch.float32
 
     # Load the pipeline
     pipeline = StableDiffusionXLUpsamplingGuidancePipeline.from_pretrained(
         model, torch_dtype=dtype
     ).to(device)
-
-    print(f"Model dtype: {pipeline.dtype}")
 
     init_image = None
     if image_url:
@@ -134,7 +132,7 @@ def main(
                 f"Failed to upload video. Server responded with status: {response.status_code} - {response.text}"
             )
 
-    elif save_dir != "~":
+    elif save_dir is not None:
         save_dir = os.path.expanduser(save_dir)
         os.makedirs(save_dir, exist_ok=True)
 
@@ -192,7 +190,6 @@ if __name__ == "__main__":
     parser.add_argument(
         "--save_dir",
         type=str,
-        default="~",
         help="Directory to save the generated images",
     )
     parser.add_argument(
