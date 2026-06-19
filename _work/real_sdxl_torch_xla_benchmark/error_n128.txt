@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "/tmp/ipykernel_14/4193289901.py", line 320, in main
+    cold_seconds, cold_images = run_pipeline_call(pipe, torch, xla, xm, count, SEED)
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/ipykernel_14/4193289901.py", line 198, in run_pipeline_call
+    result = pipe(
+             ^^^^^
+  File "/usr/local/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 120, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/sdxl_upsample.py", line 957, in __call__
+    xla.sync()
+  File "/usr/local/lib/python3.12/site-packages/torch_xla/torch_xla.py", line 87, in sync
+    torch_xla._XLAC._xla_step_marker(
+ValueError: Allocation (size=21474836480) would exceed memory (size=17179869184) :: #allocation14167 [shape = 'f32[320,4096,4096]{1,2,0:T(8,128)}', space=hbm, size = 0xffffffffffffffff, tag = 'output of fusion.30572.remat@{1}'] :: <no-hlo-instruction>

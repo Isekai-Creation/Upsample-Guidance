@@ -1,0 +1,824 @@
+{
+  "actual_xla_device": "xla:0",
+  "backend": "torch_xla",
+  "counts": [
+    1,
+    8,
+    32,
+    128
+  ],
+  "device": "TPU v5e-8",
+  "diffusers_version": "0.38.0",
+  "height": 1024,
+  "model": "KBlueLeaf/Kohaku-XL-Zeta",
+  "negative_prompt": "nsfw, lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, artist name",
+  "output_type": "image",
+  "pipeline_output_type": "pil",
+  "prompt": "masterpiece, best quality, cinematic fantasy character portrait, detailed lighting",
+  "results": [
+    {
+      "actual_xla_device": "xla:0",
+      "backend": "torch_xla",
+      "cold_latency_sec": 363.6499,
+      "cold_result_count": 1,
+      "device": "TPU v5e-8",
+      "dtype": "torch.float32",
+      "error": null,
+      "height": 1024,
+      "images_per_sec": 0.1013,
+      "load_latency_sec": 14.3269,
+      "loaded_model_proof": {
+        "dtype": "torch.float32",
+        "model_id": "KBlueLeaf/Kohaku-XL-Zeta",
+        "num_images_per_prompt": 1,
+        "pipeline_class": "StableDiffusionXLUpsamplingGuidancePipeline",
+        "prompt": "masterpiece, best quality, cinematic fantasy character portrait, detailed lighting",
+        "resolution": "1024x1024",
+        "scheduler": "EulerDiscreteScheduler",
+        "steps": 25,
+        "unet_config_or_model_path": "/root/.cache/huggingface/hub/models--KBlueLeaf--Kohaku-XL-Zeta/snapshots/c14affd9483ac7603cfff3f06b05da22a06deaa6/unet",
+        "vae_config_or_model_path": "/root/.cache/huggingface/hub/models--KBlueLeaf--Kohaku-XL-Zeta/snapshots/c14affd9483ac7603cfff3f06b05da22a06deaa6/vae",
+        "xla_device": "xla:0"
+      },
+      "model": "KBlueLeaf/Kohaku-XL-Zeta",
+      "num_images_per_prompt": 1,
+      "output_type": "image",
+      "peak_memory": null,
+      "pipeline_output_type": "pil",
+      "sample_image": "_work/real_sdxl_torch_xla_benchmark/sample_n1.png",
+      "status": "success",
+      "steps": 25,
+      "traceback": null,
+      "warm_latencies_sec": [
+        9.8698,
+        9.8738,
+        9.8751
+      ],
+      "warm_median_latency_sec": 9.8738,
+      "width": 1024,
+      "xla_metrics": {
+        "cold": {
+          "CachedCompile": {
+            "kind": "Counter",
+            "value": 24
+          },
+          "CompileTime": {
+            "accumulator": "05m15s633ms639.396us",
+            "kind": "Metric",
+            "samples": 5
+          },
+          "DeviceLockWait": {
+            "accumulator": "02s924ms595.012us",
+            "kind": "Metric",
+            "samples": 110
+          },
+          "ExecuteReplicated": {
+            "kind": "Counter",
+            "value": 29
+          },
+          "InboundData": {
+            "accumulator": "12.00MB",
+            "kind": "Metric",
+            "samples": 28
+          },
+          "OutboundData": {
+            "accumulator": "34.25GB",
+            "kind": "Metric",
+            "samples": 2728
+          },
+          "TransferFromDeviceTime": {
+            "accumulator": "622ms575.669us",
+            "kind": "Metric",
+            "samples": 28
+          },
+          "TransferToDeviceTime": {
+            "accumulator": "01s060ms559.572us",
+            "kind": "Metric",
+            "samples": 2728
+          },
+          "UncachedCompile": {
+            "kind": "Counter",
+            "value": 5
+          }
+        },
+        "warm_runs": [
+          {
+            "CachedCompile": {
+              "kind": "Counter",
+              "value": 29
+            },
+            "DeviceLockWait": {
+              "accumulator": "221.302us",
+              "kind": "Metric",
+              "samples": 110
+            },
+            "ExecuteReplicated": {
+              "kind": "Counter",
+              "value": 29
+            },
+            "InboundData": {
+              "accumulator": "12.00MB",
+              "kind": "Metric",
+              "samples": 28
+            },
+            "OutboundData": {
+              "accumulator": "2.02MB",
+              "kind": "Metric",
+              "samples": 8
+            },
+            "TransferFromDeviceTime": {
+              "accumulator": "05s826ms268.397us",
+              "kind": "Metric",
+              "samples": 28
+            },
+            "TransferToDeviceTime": {
+              "accumulator": "002ms627.839us",
+              "kind": "Metric",
+              "samples": 8
+            }
+          },
+          {
+            "CachedCompile": {
+              "kind": "Counter",
+              "value": 29
+            },
+            "DeviceLockWait": {
+              "accumulator": "233.529us",
+              "kind": "Metric",
+              "samples": 110
+            },
+            "ExecuteReplicated": {
+              "kind": "Counter",
+              "value": 29
+            },
+            "InboundData": {
+              "accumulator": "12.00MB",
+              "kind": "Metric",
+              "samples": 28
+            },
+            "OutboundData": {
+              "accumulator": "2.02MB",
+              "kind": "Metric",
+              "samples": 8
+            },
+            "TransferFromDeviceTime": {
+              "accumulator": "05s767ms757.320us",
+              "kind": "Metric",
+              "samples": 28
+            },
+            "TransferToDeviceTime": {
+              "accumulator": "002ms743.971us",
+              "kind": "Metric",
+              "samples": 8
+            }
+          },
+          {
+            "CachedCompile": {
+              "kind": "Counter",
+              "value": 29
+            },
+            "DeviceLockWait": {
+              "accumulator": "219.586us",
+              "kind": "Metric",
+              "samples": 110
+            },
+            "ExecuteReplicated": {
+              "kind": "Counter",
+              "value": 29
+            },
+            "InboundData": {
+              "accumulator": "12.00MB",
+              "kind": "Metric",
+              "samples": 28
+            },
+            "OutboundData": {
+              "accumulator": "2.02MB",
+              "kind": "Metric",
+              "samples": 8
+            },
+            "TransferFromDeviceTime": {
+              "accumulator": "05s804ms824.207us",
+              "kind": "Metric",
+              "samples": 28
+            },
+            "TransferToDeviceTime": {
+              "accumulator": "002ms646.539us",
+              "kind": "Metric",
+              "samples": 8
+            }
+          }
+        ]
+      },
+      "xla_metrics_cold": {
+        "CachedCompile": {
+          "kind": "Counter",
+          "value": 24
+        },
+        "CompileTime": {
+          "accumulator": "05m15s633ms639.396us",
+          "kind": "Metric",
+          "samples": 5
+        },
+        "DeviceLockWait": {
+          "accumulator": "02s924ms595.012us",
+          "kind": "Metric",
+          "samples": 110
+        },
+        "ExecuteReplicated": {
+          "kind": "Counter",
+          "value": 29
+        },
+        "InboundData": {
+          "accumulator": "12.00MB",
+          "kind": "Metric",
+          "samples": 28
+        },
+        "OutboundData": {
+          "accumulator": "34.25GB",
+          "kind": "Metric",
+          "samples": 2728
+        },
+        "TransferFromDeviceTime": {
+          "accumulator": "622ms575.669us",
+          "kind": "Metric",
+          "samples": 28
+        },
+        "TransferToDeviceTime": {
+          "accumulator": "01s060ms559.572us",
+          "kind": "Metric",
+          "samples": 2728
+        },
+        "UncachedCompile": {
+          "kind": "Counter",
+          "value": 5
+        }
+      },
+      "xla_metrics_warm_runs": [
+        {
+          "CachedCompile": {
+            "kind": "Counter",
+            "value": 29
+          },
+          "DeviceLockWait": {
+            "accumulator": "221.302us",
+            "kind": "Metric",
+            "samples": 110
+          },
+          "ExecuteReplicated": {
+            "kind": "Counter",
+            "value": 29
+          },
+          "InboundData": {
+            "accumulator": "12.00MB",
+            "kind": "Metric",
+            "samples": 28
+          },
+          "OutboundData": {
+            "accumulator": "2.02MB",
+            "kind": "Metric",
+            "samples": 8
+          },
+          "TransferFromDeviceTime": {
+            "accumulator": "05s826ms268.397us",
+            "kind": "Metric",
+            "samples": 28
+          },
+          "TransferToDeviceTime": {
+            "accumulator": "002ms627.839us",
+            "kind": "Metric",
+            "samples": 8
+          }
+        },
+        {
+          "CachedCompile": {
+            "kind": "Counter",
+            "value": 29
+          },
+          "DeviceLockWait": {
+            "accumulator": "233.529us",
+            "kind": "Metric",
+            "samples": 110
+          },
+          "ExecuteReplicated": {
+            "kind": "Counter",
+            "value": 29
+          },
+          "InboundData": {
+            "accumulator": "12.00MB",
+            "kind": "Metric",
+            "samples": 28
+          },
+          "OutboundData": {
+            "accumulator": "2.02MB",
+            "kind": "Metric",
+            "samples": 8
+          },
+          "TransferFromDeviceTime": {
+            "accumulator": "05s767ms757.320us",
+            "kind": "Metric",
+            "samples": 28
+          },
+          "TransferToDeviceTime": {
+            "accumulator": "002ms743.971us",
+            "kind": "Metric",
+            "samples": 8
+          }
+        },
+        {
+          "CachedCompile": {
+            "kind": "Counter",
+            "value": 29
+          },
+          "DeviceLockWait": {
+            "accumulator": "219.586us",
+            "kind": "Metric",
+            "samples": 110
+          },
+          "ExecuteReplicated": {
+            "kind": "Counter",
+            "value": 29
+          },
+          "InboundData": {
+            "accumulator": "12.00MB",
+            "kind": "Metric",
+            "samples": 28
+          },
+          "OutboundData": {
+            "accumulator": "2.02MB",
+            "kind": "Metric",
+            "samples": 8
+          },
+          "TransferFromDeviceTime": {
+            "accumulator": "05s804ms824.207us",
+            "kind": "Metric",
+            "samples": 28
+          },
+          "TransferToDeviceTime": {
+            "accumulator": "002ms646.539us",
+            "kind": "Metric",
+            "samples": 8
+          }
+        }
+      ]
+    },
+    {
+      "actual_xla_device": "xla:0",
+      "backend": "torch_xla",
+      "cold_latency_sec": 391.4695,
+      "cold_result_count": 8,
+      "device": "TPU v5e-8",
+      "dtype": "torch.float32",
+      "error": null,
+      "height": 1024,
+      "images_per_sec": 0.3696,
+      "load_latency_sec": 3.3696,
+      "loaded_model_proof": {
+        "dtype": "torch.float32",
+        "model_id": "KBlueLeaf/Kohaku-XL-Zeta",
+        "num_images_per_prompt": 8,
+        "pipeline_class": "StableDiffusionXLUpsamplingGuidancePipeline",
+        "prompt": "masterpiece, best quality, cinematic fantasy character portrait, detailed lighting",
+        "resolution": "1024x1024",
+        "scheduler": "EulerDiscreteScheduler",
+        "steps": 25,
+        "unet_config_or_model_path": "/root/.cache/huggingface/hub/models--KBlueLeaf--Kohaku-XL-Zeta/snapshots/c14affd9483ac7603cfff3f06b05da22a06deaa6/unet",
+        "vae_config_or_model_path": "/root/.cache/huggingface/hub/models--KBlueLeaf--Kohaku-XL-Zeta/snapshots/c14affd9483ac7603cfff3f06b05da22a06deaa6/vae",
+        "xla_device": "xla:0"
+      },
+      "model": "KBlueLeaf/Kohaku-XL-Zeta",
+      "num_images_per_prompt": 8,
+      "output_type": "image",
+      "peak_memory": null,
+      "pipeline_output_type": "pil",
+      "sample_image": "_work/real_sdxl_torch_xla_benchmark/sample_n8.png",
+      "status": "success",
+      "steps": 25,
+      "traceback": null,
+      "warm_latencies_sec": [
+        21.6556,
+        21.6474,
+        21.6453
+      ],
+      "warm_median_latency_sec": 21.6474,
+      "width": 1024,
+      "xla_metrics": {
+        "cold": {
+          "CachedCompile": {
+            "kind": "Counter",
+            "value": 26
+          },
+          "CompileTime": {
+            "accumulator": "06m43s518ms734.871us",
+            "kind": "Metric",
+            "samples": 4
+          },
+          "DeviceLockWait": {
+            "accumulator": "05s139ms727.680us",
+            "kind": "Metric",
+            "samples": 110
+          },
+          "ExecuteReplicated": {
+            "kind": "Counter",
+            "value": 29
+          },
+          "InboundData": {
+            "accumulator": "96.00MB",
+            "kind": "Metric",
+            "samples": 28
+          },
+          "OutboundData": {
+            "accumulator": "34.26GB",
+            "kind": "Metric",
+            "samples": 2651
+          },
+          "TransferFromDeviceTime": {
+            "accumulator": "03s719ms133.570us",
+            "kind": "Metric",
+            "samples": 28
+          },
+          "TransferToDeviceTime": {
+            "accumulator": "01s098ms015.086us",
+            "kind": "Metric",
+            "samples": 2651
+          },
+          "UncachedCompile": {
+            "kind": "Counter",
+            "value": 3
+          }
+        },
+        "warm_runs": [
+          {
+            "CachedCompile": {
+              "kind": "Counter",
+              "value": 29
+            },
+            "CompileTime": {
+              "accumulator": "026ms869.741us",
+              "kind": "Metric",
+              "samples": 1
+            },
+            "DeviceLockWait": {
+              "accumulator": "244.356us",
+              "kind": "Metric",
+              "samples": 110
+            },
+            "ExecuteReplicated": {
+              "kind": "Counter",
+              "value": 29
+            },
+            "InboundData": {
+              "accumulator": "96.00MB",
+              "kind": "Metric",
+              "samples": 28
+            },
+            "OutboundData": {
+              "accumulator": "16.02MB",
+              "kind": "Metric",
+              "samples": 8
+            },
+            "TransferFromDeviceTime": {
+              "accumulator": "16s396ms185.932us",
+              "kind": "Metric",
+              "samples": 28
+            },
+            "TransferToDeviceTime": {
+              "accumulator": "002ms679.539us",
+              "kind": "Metric",
+              "samples": 8
+            }
+          },
+          {
+            "CachedCompile": {
+              "kind": "Counter",
+              "value": 29
+            },
+            "CompileTime": {
+              "accumulator": "025ms290.221us",
+              "kind": "Metric",
+              "samples": 1
+            },
+            "DeviceLockWait": {
+              "accumulator": "226.389us",
+              "kind": "Metric",
+              "samples": 110
+            },
+            "ExecuteReplicated": {
+              "kind": "Counter",
+              "value": 29
+            },
+            "InboundData": {
+              "accumulator": "96.00MB",
+              "kind": "Metric",
+              "samples": 28
+            },
+            "OutboundData": {
+              "accumulator": "16.02MB",
+              "kind": "Metric",
+              "samples": 8
+            },
+            "TransferFromDeviceTime": {
+              "accumulator": "16s456ms401.596us",
+              "kind": "Metric",
+              "samples": 28
+            },
+            "TransferToDeviceTime": {
+              "accumulator": "002ms579.369us",
+              "kind": "Metric",
+              "samples": 8
+            }
+          },
+          {
+            "CachedCompile": {
+              "kind": "Counter",
+              "value": 29
+            },
+            "CompileTime": {
+              "accumulator": "025ms182.448us",
+              "kind": "Metric",
+              "samples": 1
+            },
+            "DeviceLockWait": {
+              "accumulator": "241.021us",
+              "kind": "Metric",
+              "samples": 110
+            },
+            "ExecuteReplicated": {
+              "kind": "Counter",
+              "value": 29
+            },
+            "InboundData": {
+              "accumulator": "96.00MB",
+              "kind": "Metric",
+              "samples": 28
+            },
+            "OutboundData": {
+              "accumulator": "16.02MB",
+              "kind": "Metric",
+              "samples": 8
+            },
+            "TransferFromDeviceTime": {
+              "accumulator": "16s476ms486.269us",
+              "kind": "Metric",
+              "samples": 28
+            },
+            "TransferToDeviceTime": {
+              "accumulator": "002ms729.579us",
+              "kind": "Metric",
+              "samples": 8
+            }
+          }
+        ]
+      },
+      "xla_metrics_cold": {
+        "CachedCompile": {
+          "kind": "Counter",
+          "value": 26
+        },
+        "CompileTime": {
+          "accumulator": "06m43s518ms734.871us",
+          "kind": "Metric",
+          "samples": 4
+        },
+        "DeviceLockWait": {
+          "accumulator": "05s139ms727.680us",
+          "kind": "Metric",
+          "samples": 110
+        },
+        "ExecuteReplicated": {
+          "kind": "Counter",
+          "value": 29
+        },
+        "InboundData": {
+          "accumulator": "96.00MB",
+          "kind": "Metric",
+          "samples": 28
+        },
+        "OutboundData": {
+          "accumulator": "34.26GB",
+          "kind": "Metric",
+          "samples": 2651
+        },
+        "TransferFromDeviceTime": {
+          "accumulator": "03s719ms133.570us",
+          "kind": "Metric",
+          "samples": 28
+        },
+        "TransferToDeviceTime": {
+          "accumulator": "01s098ms015.086us",
+          "kind": "Metric",
+          "samples": 2651
+        },
+        "UncachedCompile": {
+          "kind": "Counter",
+          "value": 3
+        }
+      },
+      "xla_metrics_warm_runs": [
+        {
+          "CachedCompile": {
+            "kind": "Counter",
+            "value": 29
+          },
+          "CompileTime": {
+            "accumulator": "026ms869.741us",
+            "kind": "Metric",
+            "samples": 1
+          },
+          "DeviceLockWait": {
+            "accumulator": "244.356us",
+            "kind": "Metric",
+            "samples": 110
+          },
+          "ExecuteReplicated": {
+            "kind": "Counter",
+            "value": 29
+          },
+          "InboundData": {
+            "accumulator": "96.00MB",
+            "kind": "Metric",
+            "samples": 28
+          },
+          "OutboundData": {
+            "accumulator": "16.02MB",
+            "kind": "Metric",
+            "samples": 8
+          },
+          "TransferFromDeviceTime": {
+            "accumulator": "16s396ms185.932us",
+            "kind": "Metric",
+            "samples": 28
+          },
+          "TransferToDeviceTime": {
+            "accumulator": "002ms679.539us",
+            "kind": "Metric",
+            "samples": 8
+          }
+        },
+        {
+          "CachedCompile": {
+            "kind": "Counter",
+            "value": 29
+          },
+          "CompileTime": {
+            "accumulator": "025ms290.221us",
+            "kind": "Metric",
+            "samples": 1
+          },
+          "DeviceLockWait": {
+            "accumulator": "226.389us",
+            "kind": "Metric",
+            "samples": 110
+          },
+          "ExecuteReplicated": {
+            "kind": "Counter",
+            "value": 29
+          },
+          "InboundData": {
+            "accumulator": "96.00MB",
+            "kind": "Metric",
+            "samples": 28
+          },
+          "OutboundData": {
+            "accumulator": "16.02MB",
+            "kind": "Metric",
+            "samples": 8
+          },
+          "TransferFromDeviceTime": {
+            "accumulator": "16s456ms401.596us",
+            "kind": "Metric",
+            "samples": 28
+          },
+          "TransferToDeviceTime": {
+            "accumulator": "002ms579.369us",
+            "kind": "Metric",
+            "samples": 8
+          }
+        },
+        {
+          "CachedCompile": {
+            "kind": "Counter",
+            "value": 29
+          },
+          "CompileTime": {
+            "accumulator": "025ms182.448us",
+            "kind": "Metric",
+            "samples": 1
+          },
+          "DeviceLockWait": {
+            "accumulator": "241.021us",
+            "kind": "Metric",
+            "samples": 110
+          },
+          "ExecuteReplicated": {
+            "kind": "Counter",
+            "value": 29
+          },
+          "InboundData": {
+            "accumulator": "96.00MB",
+            "kind": "Metric",
+            "samples": 28
+          },
+          "OutboundData": {
+            "accumulator": "16.02MB",
+            "kind": "Metric",
+            "samples": 8
+          },
+          "TransferFromDeviceTime": {
+            "accumulator": "16s476ms486.269us",
+            "kind": "Metric",
+            "samples": 28
+          },
+          "TransferToDeviceTime": {
+            "accumulator": "002ms729.579us",
+            "kind": "Metric",
+            "samples": 8
+          }
+        }
+      ]
+    },
+    {
+      "actual_xla_device": "xla:0",
+      "backend": "torch_xla",
+      "cold_latency_sec": null,
+      "device": "TPU v5e-8",
+      "dtype": "torch.float32",
+      "error": "ValueError: XLA:TPU compile permanent error. Ran out of memory in memory space hbm. Used 16.29G of 15.75G hbm. Exceeded hbm capacity by 558.95M.\n\nTotal hbm usage >= 16.54G:\n    reserved        258.00M \n    program          15.09G \n    arguments         1.20G \n\nOutput size 8.00M; shares 0B with arguments.\n\nProgram hbm requirement 15.09G:\n    global           24.00M\n    scoped           392.0K\n    HLO temp         15.07G (99.2% utilization: Unpadded (12.83G) Padded (12.93G), 14.2% fragmentation (2.14G))\n\n  Largest program allocations in hbm:\n\n  1. Size: 5.00G\n     Shape: f32[80,4096,4096]{1,2,0:T(8,128)}\n     Unpadded size: 5.00G\n     XLA label: fusion.19799 = fusion(get-tuple-element.50607, get-tuple-element.50608, get-tuple-element.50610, get-tuple-element.50611, ...(+5)), kind=kOutput, output_to_operand_aliasing={{2}: (0, {}), {3}: (1, {}), {4}: (1, {}), {5}: (2, {}), {6}: (3, {}), {7}: (4, {}), {8}: (5, {}), {9}: (6, {}), {10}: (7, {})}, calls=async_collective_fusion.19799\n     Allocation type: HLO temp\n     ==========================\n\n  2. Size: 5.00G\n     Shape: f32[80,4096,4096]{1,2,0:T(8,128)}\n     Unpadded size: 5.00G\n     XLA label: fusion.19794 = fusion(get-tuple-element.50592, get-tuple-element.50593, get-tuple-element.50595, get-tuple-element.50596, ...(+6)), kind=kOutput, output_to_operand_aliasing={{2}: (0, {}), {3}: (1, {}), {4}: (1, {}), {5}: (2, {}), {6}: (3, {}), {7}: (4, {}), {8}: (5, {}), {9}: (6, {}), {10}: (7, {})}, calls=async_collective_fusion.19794\n     Allocation type: HLO temp\n     ==========================\n\n  3. Size: 192.00M\n     Shape: f32[8,320,128,128]{1,0,3,2:T(8,128)}\n     Unpadded size: 160.00M\n     Extra memory due to padding: 32.00M (1.2x expansion)\n     XLA label: fusion.10848 = fusion(get-tuple-element.2135, copy-done.2193), kind=kLoop, calls=fused_computation.13115\n     Allocation type: HLO temp\n     ==========================\n\n  4. Size: 192.00M\n     Shape: f32[8,320,128,128]{1,0,3,2:T(8,128)}\n     Unpadded size: 160.00M\n     Extra memory due to padding: 32.00M (1.2x expansion)\n     XLA label: fusion.10847 = fusion(get-tuple-element.11243, get-tuple-element.2137, copy-done.2192), kind=kLoop, calls=fused_computation.13114\n     Allocation type: HLO temp\n     ==========================\n\n  5. Size: 192.00M\n     Shape: f32[8,320,128,128]{1,0,3,2:T(8,128)}\n     Unpadded size: 160.00M\n     Extra memory due to padding: 32.00M (1.2x expansion)\n     XLA label: fusion.11075 = fusion(get-tuple-element.11242, get-tuple-element.2139, copy-done.2191), kind=kLoop, calls=fused_computation.13339\n     Allocation type: HLO temp\n     ==========================\n\n  6. Size: 80.00M\n     Shape: f32[8,4096,640]{2,1,0:T(8,128)}\n     Unpadded size: 80.00M\n     XLA label: custom-call.5 = custom-call(), custom_call_target=\"AllocateBuffer\"\n     Allocation type: HLO temp\n     ==========================\n\n  7. Size: 80.00M\n     Shape: f32[8,640,64,64]{1,0,3,2:T(8,128)}\n     Unpadded size: 80.00M\n     XLA label: copy-start.32 = copy-start(get-tuple-element.11237)\n     Allocation type: HLO temp\n     ==========================\n\n  8. Size: 80.00M\n     Shape: f32[8,4096,640]{2,1,0:T(8,128)}\n     Unpadded size: 80.00M\n     XLA label: custom-call.3 = custom-call(), custom_call_target=\"AllocateBuffer\"\n     Allocation type: HLO temp\n     ==========================\n\n  9. Size: 80.00M\n     Shape: f32[8,4096,640]{2,1,0:T(8,128)}\n     Unpadded size: 80.00M\n     XLA label: custom-call.4 = custom-call(), custom_call_target=\"AllocateBuffer\"\n     Allocation type: HLO temp\n     ==========================\n\n  10. Size: 80.00M\n     Shape: f32[8,4096,640]{2,1,0:T(8,128)}\n     Unpadded size: 80.00M\n     XLA label: copy-start.28 = copy-start(get-tuple-element.11234)\n     Allocation type: HLO temp\n     ==========================\n\n  11. Size: 48.00M\n     Shape: f32[8,320,64,64]{1,0,3,2:T(8,128)}\n     Unpadded size: 40.00M\n     Extra memory due to padding: 8.00M (1.2x expansion)\n     XLA label: copy-start.34 = copy-start(get-tuple-element.11239)\n     Allocation type: HLO temp\n     ==========================\n\n  12. Size: 40.00M\n     Shape: f32[8,1024,1280]{2,1,0:T(8,128)}\n     Unpadded size: 40.00M\n     XLA label: custom-call.36 = custom-call(), custom_call_target=\"AllocateBuffer\"\n     Allocation type: HLO temp\n     ==========================\n\n  13. Size: 40.00M\n     Shape: f32[8,1024,1280]{2,1,0:T(8,128)}\n     Unpadded size: 40.00M\n     XLA label: custom-call.7 = custom-call(), custom_call_target=\"AllocateBuffer\"\n     Allocation type: HLO temp\n     ==========================\n\n  14. Size: 40.00M\n     Shape: f32[8,1024,1280]{2,1,0:T(8,128)}\n     Unpadded size: 40.00M\n     XLA label: custom-call.53 = custom-call(), custom_call_target=\"AllocateBuffer\"\n     Allocation type: HLO temp\n     ==========================\n\n  15. Size: 40.00M\n     Shape: f32[8,1024,1280]{2,1,0:T(8,128)}\n     Unpadded size: 40.00M\n     XLA label: custom-call.52 = custom-call(), custom_call_target=\"AllocateBuffer\"\n     Allocation type: HLO temp\n     ==========================\n\n  16. Size: 40.00M\n     Shape: f32[8,1024,1280]{2,1,0:T(8,128)}\n     Unpadded size: 40.00M\n     XLA label: custom-call.51 = custom-call(), custom_call_target=\"AllocateBuffer\"\n     Allocation type: HLO temp\n     ==========================\n\n  17. Size: 40.00M\n     Shape: f32[8,1280,32,32]{1,0,3,2:T(8,128)}\n     Unpadded size: 40.00M\n     XLA label: custom-call.49 = custom-call(), custom_call_target=\"AllocateBuffer\"\n     Allocation type: HLO temp\n     ==========================\n\n  18. Size: 40.00M\n     Shape: f32[8,1280,32,32]{1,0,3,2:T(8,128)}\n     Unpadded size: 40.00M\n     XLA label: custom-call.50 = custom-call(), custom_call_target=\"AllocateBuffer\"\n     Allocation type: HLO temp\n     ==========================\n\n  19. Size: 40.00M\n     Shape: f32[8,1024,1280]{2,1,0:T(8,128)}\n     Unpadded size: 40.00M\n     XLA label: custom-call.48 = custom-call(), custom_call_target=\"AllocateBuffer\"\n     Allocation type: HLO temp\n     ==========================\n\n  20. Size: 40.00M\n     Shape: f32[8,1024,1280]{2,1,0:T(8,128)}\n     Unpadded size: 40.00M\n     XLA label: custom-call.47 = custom-call(), custom_call_target=\"AllocateBuffer\"\n     Allocation type: HLO temp\n     ==========================\n\n",
+      "height": 1024,
+      "images_per_sec": null,
+      "load_latency_sec": 10.3311,
+      "loaded_model_proof": {
+        "dtype": "torch.float32",
+        "model_id": "KBlueLeaf/Kohaku-XL-Zeta",
+        "num_images_per_prompt": 32,
+        "pipeline_class": "StableDiffusionXLUpsamplingGuidancePipeline",
+        "prompt": "masterpiece, best quality, cinematic fantasy character portrait, detailed lighting",
+        "resolution": "1024x1024",
+        "scheduler": "EulerDiscreteScheduler",
+        "steps": 25,
+        "unet_config_or_model_path": "/root/.cache/huggingface/hub/models--KBlueLeaf--Kohaku-XL-Zeta/snapshots/c14affd9483ac7603cfff3f06b05da22a06deaa6/unet",
+        "vae_config_or_model_path": "/root/.cache/huggingface/hub/models--KBlueLeaf--Kohaku-XL-Zeta/snapshots/c14affd9483ac7603cfff3f06b05da22a06deaa6/vae",
+        "xla_device": "xla:0"
+      },
+      "model": "KBlueLeaf/Kohaku-XL-Zeta",
+      "num_images_per_prompt": 32,
+      "output_type": "image",
+      "peak_memory": null,
+      "pipeline_output_type": "pil",
+      "sample_image": null,
+      "status": "failed",
+      "steps": 25,
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/ipykernel_14/4193289901.py\", line 320, in main\n    cold_seconds, cold_images = run_pipeline_call(pipe, torch, xla, xm, count, SEED)\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/ipykernel_14/4193289901.py\", line 198, in run_pipeline_call\n    result = pipe(\n             ^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/torch/utils/_contextlib.py\", line 120, in decorate_context\n    return func(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^\n  File \"/kaggle/working/sdxl_upsample.py\", line 957, in __call__\n    xla.sync()\n  File \"/usr/local/lib/python3.12/site-packages/torch_xla/torch_xla.py\", line 87, in sync\n    torch_xla._XLAC._xla_step_marker(\nValueError: XLA:TPU compile permanent error. Ran out of memory in memory space hbm. Used 16.29G of 15.75G hbm. Exceeded hbm capacity by 558.95M.\n\nTotal hbm usage >= 16.54G:\n    reserved        258.00M \n    program          15.09G \n    arguments         1.20G \n\nOutput size 8.00M; shares 0B with arguments.\n\nProgram hbm requirement 15.09G:\n    global           24.00M\n    scoped           392.0K\n    HLO temp         15.07G (99.2% utilization: Unpadded (12.83G) Padded (12.93G), 14.2% fragmentation (2.14G))\n\n  Largest program allocations in hbm:\n\n  1. Size: 5.00G\n     Shape: f32[80,4096,4096]{1,2,0:T(8,128)}\n     Unpadded size: 5.00G\n     XLA label: fusion.19799 = fusion(get-tuple-element.50607, get-tuple-element.50608, get-tuple-element.50610, get-tuple-element.50611, ...(+5)), kind=kOutput, output_to_operand_aliasing={{2}: (0, {}), {3}: (1, {}), {4}: (1, {}), {5}: (2, {}), {6}: (3, {}), {7}: (4, {}), {8}: (5, {}), {9}: (6, {}), {10}: (7, {})}, calls=async_collective_fusion.19799\n     Allocation type: HLO temp\n     ==========================\n\n  2. Size: 5.00G\n     Shape: f32[80,4096,4096]{1,2,0:T(8,128)}\n     Unpadded size: 5.00G\n     XLA label: fusion.19794 = fusion(get-tuple-element.50592, get-tuple-element.50593, get-tuple-element.50595, get-tuple-element.50596, ...(+6)), kind=kOutput, output_to_operand_aliasing={{2}: (0, {}), {3}: (1, {}), {4}: (1, {}), {5}: (2, {}), {6}: (3, {}), {7}: (4, {}), {8}: (5, {}), {9}: (6, {}), {10}: (7, {})}, calls=async_collective_fusion.19794\n     Allocation type: HLO temp\n     ==========================\n\n  3. Size: 192.00M\n     Shape: f32[8,320,128,128]{1,0,3,2:T(8,128)}\n     Unpadded size: 160.00M\n     Extra memory due to padding: 32.00M (1.2x expansion)\n     XLA label: fusion.10848 = fusion(get-tuple-element.2135, copy-done.2193), kind=kLoop, calls=fused_computation.13115\n     Allocation type: HLO temp\n     ==========================\n\n  4. Size: 192.00M\n     Shape: f32[8,320,128,128]{1,0,3,2:T(8,128)}\n     Unpadded size: 160.00M\n     Extra memory due to padding: 32.00M (1.2x expansion)\n     XLA label: fusion.10847 = fusion(get-tuple-element.11243, get-tuple-element.2137, copy-done.2192), kind=kLoop, calls=fused_computation.13114\n     Allocation type: HLO temp\n     ==========================\n\n  5. Size: 192.00M\n     Shape: f32[8,320,128,128]{1,0,3,2:T(8,128)}\n     Unpadded size: 160.00M\n     Extra memory due to padding: 32.00M (1.2x expansion)\n     XLA label: fusion.11075 = fusion(get-tuple-element.11242, get-tuple-element.2139, copy-done.2191), kind=kLoop, calls=fused_computation.13339\n     Allocation type: HLO temp\n     ==========================\n\n  6. Size: 80.00M\n     Shape: f32[8,4096,640]{2,1,0:T(8,128)}\n     Unpadded size: 80.00M\n     XLA label: custom-call.5 = custom-call(), custom_call_target=\"AllocateBuffer\"\n     Allocation type: HLO temp\n     ==========================\n\n  7. Size: 80.00M\n     Shape: f32[8,640,64,64]{1,0,3,2:T(8,128)}\n     Unpadded size: 80.00M\n     XLA label: copy-start.32 = copy-start(get-tuple-element.11237)\n     Allocation type: HLO temp\n     ==========================\n\n  8. Size: 80.00M\n     Shape: f32[8,4096,640]{2,1,0:T(8,128)}\n     Unpadded size: 80.00M\n     XLA label: custom-call.3 = custom-call(), custom_call_target=\"AllocateBuffer\"\n     Allocation type: HLO temp\n     ==========================\n\n  9. Size: 80.00M\n     Shape: f32[8,4096,640]{2,1,0:T(8,128)}\n     Unpadded size: 80.00M\n     XLA label: custom-call.4 = custom-call(), custom_call_target=\"AllocateBuffer\"\n     Allocation type: HLO temp\n     ==========================\n\n  10. Size: 80.00M\n     Shape: f32[8,4096,640]{2,1,0:T(8,128)}\n     Unpadded size: 80.00M\n     XLA label: copy-start.28 = copy-start(get-tuple-element.11234)\n     Allocation type: HLO temp\n     ==========================\n\n  11. Size: 48.00M\n     Shape: f32[8,320,64,64]{1,0,3,2:T(8,128)}\n     Unpadded size: 40.00M\n     Extra memory due to padding: 8.00M (1.2x expansion)\n     XLA label: copy-start.34 = copy-start(get-tuple-element.11239)\n     Allocation type: HLO temp\n     ==========================\n\n  12. Size: 40.00M\n     Shape: f32[8,1024,1280]{2,1,0:T(8,128)}\n     Unpadded size: 40.00M\n     XLA label: custom-call.36 = custom-call(), custom_call_target=\"AllocateBuffer\"\n     Allocation type: HLO temp\n     ==========================\n\n  13. Size: 40.00M\n     Shape: f32[8,1024,1280]{2,1,0:T(8,128)}\n     Unpadded size: 40.00M\n     XLA label: custom-call.7 = custom-call(), custom_call_target=\"AllocateBuffer\"\n     Allocation type: HLO temp\n     ==========================\n\n  14. Size: 40.00M\n     Shape: f32[8,1024,1280]{2,1,0:T(8,128)}\n     Unpadded size: 40.00M\n     XLA label: custom-call.53 = custom-call(), custom_call_target=\"AllocateBuffer\"\n     Allocation type: HLO temp\n     ==========================\n\n  15. Size: 40.00M\n     Shape: f32[8,1024,1280]{2,1,0:T(8,128)}\n     Unpadded size: 40.00M\n     XLA label: custom-call.52 = custom-call(), custom_call_target=\"AllocateBuffer\"\n     Allocation type: HLO temp\n     ==========================\n\n  16. Size: 40.00M\n     Shape: f32[8,1024,1280]{2,1,0:T(8,128)}\n     Unpadded size: 40.00M\n     XLA label: custom-call.51 = custom-call(), custom_call_target=\"AllocateBuffer\"\n     Allocation type: HLO temp\n     ==========================\n\n  17. Size: 40.00M\n     Shape: f32[8,1280,32,32]{1,0,3,2:T(8,128)}\n     Unpadded size: 40.00M\n     XLA label: custom-call.49 = custom-call(), custom_call_target=\"AllocateBuffer\"\n     Allocation type: HLO temp\n     ==========================\n\n  18. Size: 40.00M\n     Shape: f32[8,1280,32,32]{1,0,3,2:T(8,128)}\n     Unpadded size: 40.00M\n     XLA label: custom-call.50 = custom-call(), custom_call_target=\"AllocateBuffer\"\n     Allocation type: HLO temp\n     ==========================\n\n  19. Size: 40.00M\n     Shape: f32[8,1024,1280]{2,1,0:T(8,128)}\n     Unpadded size: 40.00M\n     XLA label: custom-call.48 = custom-call(), custom_call_target=\"AllocateBuffer\"\n     Allocation type: HLO temp\n     ==========================\n\n  20. Size: 40.00M\n     Shape: f32[8,1024,1280]{2,1,0:T(8,128)}\n     Unpadded size: 40.00M\n     XLA label: custom-call.47 = custom-call(), custom_call_target=\"AllocateBuffer\"\n     Allocation type: HLO temp\n     ==========================\n\n\n",
+      "warm_latencies_sec": [],
+      "warm_median_latency_sec": null,
+      "width": 1024,
+      "xla_metrics": {},
+      "xla_metrics_cold": {},
+      "xla_metrics_warm_runs": []
+    },
+    {
+      "actual_xla_device": "xla:0",
+      "backend": "torch_xla",
+      "cold_latency_sec": null,
+      "device": "TPU v5e-8",
+      "dtype": "torch.bfloat16",
+      "error": "ValueError: Allocation (size=21474836480) would exceed memory (size=17179869184) :: #allocation14167 [shape = 'f32[320,4096,4096]{1,2,0:T(8,128)}', space=hbm, size = 0xffffffffffffffff, tag = 'output of fusion.30572.remat@{1}'] :: <no-hlo-instruction>",
+      "height": 1024,
+      "images_per_sec": null,
+      "load_latency_sec": 2.9051,
+      "loaded_model_proof": {
+        "dtype": "torch.bfloat16",
+        "model_id": "KBlueLeaf/Kohaku-XL-Zeta",
+        "num_images_per_prompt": 128,
+        "pipeline_class": "StableDiffusionXLUpsamplingGuidancePipeline",
+        "prompt": "masterpiece, best quality, cinematic fantasy character portrait, detailed lighting",
+        "resolution": "1024x1024",
+        "scheduler": "EulerDiscreteScheduler",
+        "steps": 25,
+        "unet_config_or_model_path": "/root/.cache/huggingface/hub/models--KBlueLeaf--Kohaku-XL-Zeta/snapshots/c14affd9483ac7603cfff3f06b05da22a06deaa6/unet",
+        "vae_config_or_model_path": "/root/.cache/huggingface/hub/models--KBlueLeaf--Kohaku-XL-Zeta/snapshots/c14affd9483ac7603cfff3f06b05da22a06deaa6/vae",
+        "xla_device": "xla:0"
+      },
+      "model": "KBlueLeaf/Kohaku-XL-Zeta",
+      "num_images_per_prompt": 128,
+      "output_type": "image",
+      "peak_memory": null,
+      "pipeline_output_type": "pil",
+      "sample_image": null,
+      "status": "failed",
+      "steps": 25,
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/ipykernel_14/4193289901.py\", line 320, in main\n    cold_seconds, cold_images = run_pipeline_call(pipe, torch, xla, xm, count, SEED)\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/ipykernel_14/4193289901.py\", line 198, in run_pipeline_call\n    result = pipe(\n             ^^^^^\n  File \"/usr/local/lib/python3.12/site-packages/torch/utils/_contextlib.py\", line 120, in decorate_context\n    return func(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^\n  File \"/kaggle/working/sdxl_upsample.py\", line 957, in __call__\n    xla.sync()\n  File \"/usr/local/lib/python3.12/site-packages/torch_xla/torch_xla.py\", line 87, in sync\n    torch_xla._XLAC._xla_step_marker(\nValueError: Allocation (size=21474836480) would exceed memory (size=17179869184) :: #allocation14167 [shape = 'f32[320,4096,4096]{1,2,0:T(8,128)}', space=hbm, size = 0xffffffffffffffff, tag = 'output of fusion.30572.remat@{1}'] :: <no-hlo-instruction>\n",
+      "warm_latencies_sec": [],
+      "warm_median_latency_sec": null,
+      "width": 1024,
+      "xla_metrics": {},
+      "xla_metrics_cold": {},
+      "xla_metrics_warm_runs": []
+    }
+  ],
+  "steps": 25,
+  "torch_version": "2.8.0+cpu",
+  "torch_xla_version": "2.8.0",
+  "warm_repeats": 3,
+  "width": 1024,
+  "xla_runtime_device_count": 8
+}

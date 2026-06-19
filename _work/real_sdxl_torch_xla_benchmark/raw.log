@@ -1,0 +1,383 @@
+[2026-06-19 05:06:27] REAL_SDXL_TORCH_XLA_BENCHMARK_START
+[2026-06-19 05:06:27] FORCED_MODEL_ID=KBlueLeaf/Kohaku-XL-Zeta
+[2026-06-19 05:06:27] BACKEND=torch_xla
+[2026-06-19 05:06:27] DEVICE_TARGET=TPU v5e-8
+[2026-06-19 05:06:27] XLA_DEVICE=xla:0
+[2026-06-19 05:06:27] RESOLUTION=1024x1024
+[2026-06-19 05:06:27] STEPS=25
+[2026-06-19 05:06:27] OUTPUT_TYPE=pil full image output
+[2026-06-19 05:06:27] PROMPT=masterpiece, best quality, cinematic fantasy character portrait, detailed lighting
+[2026-06-19 05:06:27] COUNTS=(1, 8, 32, 128)
+[2026-06-19 05:06:27] COUNT_START num_images_per_prompt=1 dtype=torch.float32
+[2026-06-19 05:06:41] MODEL_PROOF {"dtype": "torch.float32", "model_id": "KBlueLeaf/Kohaku-XL-Zeta", "num_images_per_prompt": 1, "pipeline_class": "StableDiffusionXLUpsamplingGuidancePipeline", "prompt": "masterpiece, best quality, cinematic fantasy character portrait, detailed lighting", "resolution": "1024x1024", "scheduler": "EulerDiscreteScheduler", "steps": 25, "unet_config_or_model_path": "/root/.cache/huggingface/hub/models--KBlueLeaf--Kohaku-XL-Zeta/snapshots/c14affd9483ac7603cfff3f06b05da22a06deaa6/unet", "vae_config_or_model_path": "/root/.cache/huggingface/hub/models--KBlueLeaf--Kohaku-XL-Zeta/snapshots/c14affd9483ac7603cfff3f06b05da22a06deaa6/vae", "xla_device": "xla:0"}
+[2026-06-19 05:12:45] COLD_DONE count=1 latency_sec=363.6499 images=1 metrics={"CachedCompile": {"kind": "Counter", "value": 24}, "CompileTime": {"accumulator": "05m15s633ms639.396us", "kind": "Metric", "samples": 5}, "DeviceLockWait": {"accumulator": "02s924ms595.012us", "kind": "Metric", "samples": 110}, "ExecuteReplicated": {"kind": "Counter", "value": 29}, "InboundData": {"accumulator": "12.00MB", "kind": "Metric", "samples": 28}, "OutboundData": {"accumulator": "34.25GB", "kind": "Metric", "samples": 2728}, "TransferFromDeviceTime": {"accumulator": "622ms575.669us", "kind": "Metric", "samples": 28}, "TransferToDeviceTime": {"accumulator": "01s060ms559.572us", "kind": "Metric", "samples": 2728}, "UncachedCompile": {"kind": "Counter", "value": 5}}
+[2026-06-19 05:12:55] WARM_DONE count=1 run=1 latency_sec=9.8698 images=1 metrics={"CachedCompile": {"kind": "Counter", "value": 29}, "DeviceLockWait": {"accumulator": "221.302us", "kind": "Metric", "samples": 110}, "ExecuteReplicated": {"kind": "Counter", "value": 29}, "InboundData": {"accumulator": "12.00MB", "kind": "Metric", "samples": 28}, "OutboundData": {"accumulator": "2.02MB", "kind": "Metric", "samples": 8}, "TransferFromDeviceTime": {"accumulator": "05s826ms268.397us", "kind": "Metric", "samples": 28}, "TransferToDeviceTime": {"accumulator": "002ms627.839us", "kind": "Metric", "samples": 8}}
+[2026-06-19 05:13:05] WARM_DONE count=1 run=2 latency_sec=9.8738 images=1 metrics={"CachedCompile": {"kind": "Counter", "value": 29}, "DeviceLockWait": {"accumulator": "233.529us", "kind": "Metric", "samples": 110}, "ExecuteReplicated": {"kind": "Counter", "value": 29}, "InboundData": {"accumulator": "12.00MB", "kind": "Metric", "samples": 28}, "OutboundData": {"accumulator": "2.02MB", "kind": "Metric", "samples": 8}, "TransferFromDeviceTime": {"accumulator": "05s767ms757.320us", "kind": "Metric", "samples": 28}, "TransferToDeviceTime": {"accumulator": "002ms743.971us", "kind": "Metric", "samples": 8}}
+[2026-06-19 05:13:14] WARM_DONE count=1 run=3 latency_sec=9.8751 images=1 metrics={"CachedCompile": {"kind": "Counter", "value": 29}, "DeviceLockWait": {"accumulator": "219.586us", "kind": "Metric", "samples": 110}, "ExecuteReplicated": {"kind": "Counter", "value": 29}, "InboundData": {"accumulator": "12.00MB", "kind": "Metric", "samples": 28}, "OutboundData": {"accumulator": "2.02MB", "kind": "Metric", "samples": 8}, "TransferFromDeviceTime": {"accumulator": "05s804ms824.207us", "kind": "Metric", "samples": 28}, "TransferToDeviceTime": {"accumulator": "002ms646.539us", "kind": "Metric", "samples": 8}}
+[2026-06-19 05:13:14] COUNT_SUCCESS count=1 warm_median_sec=9.8738 images_per_sec=0.1013
+[2026-06-19 05:13:15] COUNT_START num_images_per_prompt=8 dtype=torch.float32
+[2026-06-19 05:13:18] MODEL_PROOF {"dtype": "torch.float32", "model_id": "KBlueLeaf/Kohaku-XL-Zeta", "num_images_per_prompt": 8, "pipeline_class": "StableDiffusionXLUpsamplingGuidancePipeline", "prompt": "masterpiece, best quality, cinematic fantasy character portrait, detailed lighting", "resolution": "1024x1024", "scheduler": "EulerDiscreteScheduler", "steps": 25, "unet_config_or_model_path": "/root/.cache/huggingface/hub/models--KBlueLeaf--Kohaku-XL-Zeta/snapshots/c14affd9483ac7603cfff3f06b05da22a06deaa6/unet", "vae_config_or_model_path": "/root/.cache/huggingface/hub/models--KBlueLeaf--Kohaku-XL-Zeta/snapshots/c14affd9483ac7603cfff3f06b05da22a06deaa6/vae", "xla_device": "xla:0"}
+[2026-06-19 05:19:50] COLD_DONE count=8 latency_sec=391.4695 images=8 metrics={"CachedCompile": {"kind": "Counter", "value": 26}, "CompileTime": {"accumulator": "06m43s518ms734.871us", "kind": "Metric", "samples": 4}, "DeviceLockWait": {"accumulator": "05s139ms727.680us", "kind": "Metric", "samples": 110}, "ExecuteReplicated": {"kind": "Counter", "value": 29}, "InboundData": {"accumulator": "96.00MB", "kind": "Metric", "samples": 28}, "OutboundData": {"accumulator": "34.26GB", "kind": "Metric", "samples": 2651}, "TransferFromDeviceTime": {"accumulator": "03s719ms133.570us", "kind": "Metric", "samples": 28}, "TransferToDeviceTime": {"accumulator": "01s098ms015.086us", "kind": "Metric", "samples": 2651}, "UncachedCompile": {"kind": "Counter", "value": 3}}
+[2026-06-19 05:20:11] WARM_DONE count=8 run=1 latency_sec=21.6556 images=8 metrics={"CachedCompile": {"kind": "Counter", "value": 29}, "CompileTime": {"accumulator": "026ms869.741us", "kind": "Metric", "samples": 1}, "DeviceLockWait": {"accumulator": "244.356us", "kind": "Metric", "samples": 110}, "ExecuteReplicated": {"kind": "Counter", "value": 29}, "InboundData": {"accumulator": "96.00MB", "kind": "Metric", "samples": 28}, "OutboundData": {"accumulator": "16.02MB", "kind": "Metric", "samples": 8}, "TransferFromDeviceTime": {"accumulator": "16s396ms185.932us", "kind": "Metric", "samples": 28}, "TransferToDeviceTime": {"accumulator": "002ms679.539us", "kind": "Metric", "samples": 8}}
+[2026-06-19 05:20:33] WARM_DONE count=8 run=2 latency_sec=21.6474 images=8 metrics={"CachedCompile": {"kind": "Counter", "value": 29}, "CompileTime": {"accumulator": "025ms290.221us", "kind": "Metric", "samples": 1}, "DeviceLockWait": {"accumulator": "226.389us", "kind": "Metric", "samples": 110}, "ExecuteReplicated": {"kind": "Counter", "value": 29}, "InboundData": {"accumulator": "96.00MB", "kind": "Metric", "samples": 28}, "OutboundData": {"accumulator": "16.02MB", "kind": "Metric", "samples": 8}, "TransferFromDeviceTime": {"accumulator": "16s456ms401.596us", "kind": "Metric", "samples": 28}, "TransferToDeviceTime": {"accumulator": "002ms579.369us", "kind": "Metric", "samples": 8}}
+[2026-06-19 05:20:55] WARM_DONE count=8 run=3 latency_sec=21.6453 images=8 metrics={"CachedCompile": {"kind": "Counter", "value": 29}, "CompileTime": {"accumulator": "025ms182.448us", "kind": "Metric", "samples": 1}, "DeviceLockWait": {"accumulator": "241.021us", "kind": "Metric", "samples": 110}, "ExecuteReplicated": {"kind": "Counter", "value": 29}, "InboundData": {"accumulator": "96.00MB", "kind": "Metric", "samples": 28}, "OutboundData": {"accumulator": "16.02MB", "kind": "Metric", "samples": 8}, "TransferFromDeviceTime": {"accumulator": "16s476ms486.269us", "kind": "Metric", "samples": 28}, "TransferToDeviceTime": {"accumulator": "002ms729.579us", "kind": "Metric", "samples": 8}}
+[2026-06-19 05:20:55] COUNT_SUCCESS count=8 warm_median_sec=21.6474 images_per_sec=0.3696
+[2026-06-19 05:20:55] COUNT_START num_images_per_prompt=32 dtype=torch.float32
+[2026-06-19 05:21:05] MODEL_PROOF {"dtype": "torch.float32", "model_id": "KBlueLeaf/Kohaku-XL-Zeta", "num_images_per_prompt": 32, "pipeline_class": "StableDiffusionXLUpsamplingGuidancePipeline", "prompt": "masterpiece, best quality, cinematic fantasy character portrait, detailed lighting", "resolution": "1024x1024", "scheduler": "EulerDiscreteScheduler", "steps": 25, "unet_config_or_model_path": "/root/.cache/huggingface/hub/models--KBlueLeaf--Kohaku-XL-Zeta/snapshots/c14affd9483ac7603cfff3f06b05da22a06deaa6/unet", "vae_config_or_model_path": "/root/.cache/huggingface/hub/models--KBlueLeaf--Kohaku-XL-Zeta/snapshots/c14affd9483ac7603cfff3f06b05da22a06deaa6/vae", "xla_device": "xla:0"}
+[2026-06-19 05:24:31] COUNT_FAILED count=32 error=ValueError: XLA:TPU compile permanent error. Ran out of memory in memory space hbm. Used 16.29G of 15.75G hbm. Exceeded hbm capacity by 558.95M.
+
+Total hbm usage >= 16.54G:
+    reserved        258.00M 
+    program          15.09G 
+    arguments         1.20G 
+
+Output size 8.00M; shares 0B with arguments.
+
+Program hbm requirement 15.09G:
+    global           24.00M
+    scoped           392.0K
+    HLO temp         15.07G (99.2% utilization: Unpadded (12.83G) Padded (12.93G), 14.2% fragmentation (2.14G))
+
+  Largest program allocations in hbm:
+
+  1. Size: 5.00G
+     Shape: f32[80,4096,4096]{1,2,0:T(8,128)}
+     Unpadded size: 5.00G
+     XLA label: fusion.19799 = fusion(get-tuple-element.50607, get-tuple-element.50608, get-tuple-element.50610, get-tuple-element.50611, ...(+5)), kind=kOutput, output_to_operand_aliasing={{2}: (0, {}), {3}: (1, {}), {4}: (1, {}), {5}: (2, {}), {6}: (3, {}), {7}: (4, {}), {8}: (5, {}), {9}: (6, {}), {10}: (7, {})}, calls=async_collective_fusion.19799
+     Allocation type: HLO temp
+     ==========================
+
+  2. Size: 5.00G
+     Shape: f32[80,4096,4096]{1,2,0:T(8,128)}
+     Unpadded size: 5.00G
+     XLA label: fusion.19794 = fusion(get-tuple-element.50592, get-tuple-element.50593, get-tuple-element.50595, get-tuple-element.50596, ...(+6)), kind=kOutput, output_to_operand_aliasing={{2}: (0, {}), {3}: (1, {}), {4}: (1, {}), {5}: (2, {}), {6}: (3, {}), {7}: (4, {}), {8}: (5, {}), {9}: (6, {}), {10}: (7, {})}, calls=async_collective_fusion.19794
+     Allocation type: HLO temp
+     ==========================
+
+  3. Size: 192.00M
+     Shape: f32[8,320,128,128]{1,0,3,2:T(8,128)}
+     Unpadded size: 160.00M
+     Extra memory due to padding: 32.00M (1.2x expansion)
+     XLA label: fusion.10848 = fusion(get-tuple-element.2135, copy-done.2193), kind=kLoop, calls=fused_computation.13115
+     Allocation type: HLO temp
+     ==========================
+
+  4. Size: 192.00M
+     Shape: f32[8,320,128,128]{1,0,3,2:T(8,128)}
+     Unpadded size: 160.00M
+     Extra memory due to padding: 32.00M (1.2x expansion)
+     XLA label: fusion.10847 = fusion(get-tuple-element.11243, get-tuple-element.2137, copy-done.2192), kind=kLoop, calls=fused_computation.13114
+     Allocation type: HLO temp
+     ==========================
+
+  5. Size: 192.00M
+     Shape: f32[8,320,128,128]{1,0,3,2:T(8,128)}
+     Unpadded size: 160.00M
+     Extra memory due to padding: 32.00M (1.2x expansion)
+     XLA label: fusion.11075 = fusion(get-tuple-element.11242, get-tuple-element.2139, copy-done.2191), kind=kLoop, calls=fused_computation.13339
+     Allocation type: HLO temp
+     ==========================
+
+  6. Size: 80.00M
+     Shape: f32[8,4096,640]{2,1,0:T(8,128)}
+     Unpadded size: 80.00M
+     XLA label: custom-call.5 = custom-call(), custom_call_target="AllocateBuffer"
+     Allocation type: HLO temp
+     ==========================
+
+  7. Size: 80.00M
+     Shape: f32[8,640,64,64]{1,0,3,2:T(8,128)}
+     Unpadded size: 80.00M
+     XLA label: copy-start.32 = copy-start(get-tuple-element.11237)
+     Allocation type: HLO temp
+     ==========================
+
+  8. Size: 80.00M
+     Shape: f32[8,4096,640]{2,1,0:T(8,128)}
+     Unpadded size: 80.00M
+     XLA label: custom-call.3 = custom-call(), custom_call_target="AllocateBuffer"
+     Allocation type: HLO temp
+     ==========================
+
+  9. Size: 80.00M
+     Shape: f32[8,4096,640]{2,1,0:T(8,128)}
+     Unpadded size: 80.00M
+     XLA label: custom-call.4 = custom-call(), custom_call_target="AllocateBuffer"
+     Allocation type: HLO temp
+     ==========================
+
+  10. Size: 80.00M
+     Shape: f32[8,4096,640]{2,1,0:T(8,128)}
+     Unpadded size: 80.00M
+     XLA label: copy-start.28 = copy-start(get-tuple-element.11234)
+     Allocation type: HLO temp
+     ==========================
+
+  11. Size: 48.00M
+     Shape: f32[8,320,64,64]{1,0,3,2:T(8,128)}
+     Unpadded size: 40.00M
+     Extra memory due to padding: 8.00M (1.2x expansion)
+     XLA label: copy-start.34 = copy-start(get-tuple-element.11239)
+     Allocation type: HLO temp
+     ==========================
+
+  12. Size: 40.00M
+     Shape: f32[8,1024,1280]{2,1,0:T(8,128)}
+     Unpadded size: 40.00M
+     XLA label: custom-call.36 = custom-call(), custom_call_target="AllocateBuffer"
+     Allocation type: HLO temp
+     ==========================
+
+  13. Size: 40.00M
+     Shape: f32[8,1024,1280]{2,1,0:T(8,128)}
+     Unpadded size: 40.00M
+     XLA label: custom-call.7 = custom-call(), custom_call_target="AllocateBuffer"
+     Allocation type: HLO temp
+     ==========================
+
+  14. Size: 40.00M
+     Shape: f32[8,1024,1280]{2,1,0:T(8,128)}
+     Unpadded size: 40.00M
+     XLA label: custom-call.53 = custom-call(), custom_call_target="AllocateBuffer"
+     Allocation type: HLO temp
+     ==========================
+
+  15. Size: 40.00M
+     Shape: f32[8,1024,1280]{2,1,0:T(8,128)}
+     Unpadded size: 40.00M
+     XLA label: custom-call.52 = custom-call(), custom_call_target="AllocateBuffer"
+     Allocation type: HLO temp
+     ==========================
+
+  16. Size: 40.00M
+     Shape: f32[8,1024,1280]{2,1,0:T(8,128)}
+     Unpadded size: 40.00M
+     XLA label: custom-call.51 = custom-call(), custom_call_target="AllocateBuffer"
+     Allocation type: HLO temp
+     ==========================
+
+  17. Size: 40.00M
+     Shape: f32[8,1280,32,32]{1,0,3,2:T(8,128)}
+     Unpadded size: 40.00M
+     XLA label: custom-call.49 = custom-call(), custom_call_target="AllocateBuffer"
+     Allocation type: HLO temp
+     ==========================
+
+  18. Size: 40.00M
+     Shape: f32[8,1280,32,32]{1,0,3,2:T(8,128)}
+     Unpadded size: 40.00M
+     XLA label: custom-call.50 = custom-call(), custom_call_target="AllocateBuffer"
+     Allocation type: HLO temp
+     ==========================
+
+  19. Size: 40.00M
+     Shape: f32[8,1024,1280]{2,1,0:T(8,128)}
+     Unpadded size: 40.00M
+     XLA label: custom-call.48 = custom-call(), custom_call_target="AllocateBuffer"
+     Allocation type: HLO temp
+     ==========================
+
+  20. Size: 40.00M
+     Shape: f32[8,1024,1280]{2,1,0:T(8,128)}
+     Unpadded size: 40.00M
+     XLA label: custom-call.47 = custom-call(), custom_call_target="AllocateBuffer"
+     Allocation type: HLO temp
+     ==========================
+
+
+[2026-06-19 05:24:31] Traceback (most recent call last):
+  File "/tmp/ipykernel_14/4193289901.py", line 320, in main
+    cold_seconds, cold_images = run_pipeline_call(pipe, torch, xla, xm, count, SEED)
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/ipykernel_14/4193289901.py", line 198, in run_pipeline_call
+    result = pipe(
+             ^^^^^
+  File "/usr/local/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 120, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/sdxl_upsample.py", line 957, in __call__
+    xla.sync()
+  File "/usr/local/lib/python3.12/site-packages/torch_xla/torch_xla.py", line 87, in sync
+    torch_xla._XLAC._xla_step_marker(
+ValueError: XLA:TPU compile permanent error. Ran out of memory in memory space hbm. Used 16.29G of 15.75G hbm. Exceeded hbm capacity by 558.95M.
+
+Total hbm usage >= 16.54G:
+    reserved        258.00M 
+    program          15.09G 
+    arguments         1.20G 
+
+Output size 8.00M; shares 0B with arguments.
+
+Program hbm requirement 15.09G:
+    global           24.00M
+    scoped           392.0K
+    HLO temp         15.07G (99.2% utilization: Unpadded (12.83G) Padded (12.93G), 14.2% fragmentation (2.14G))
+
+  Largest program allocations in hbm:
+
+  1. Size: 5.00G
+     Shape: f32[80,4096,4096]{1,2,0:T(8,128)}
+     Unpadded size: 5.00G
+     XLA label: fusion.19799 = fusion(get-tuple-element.50607, get-tuple-element.50608, get-tuple-element.50610, get-tuple-element.50611, ...(+5)), kind=kOutput, output_to_operand_aliasing={{2}: (0, {}), {3}: (1, {}), {4}: (1, {}), {5}: (2, {}), {6}: (3, {}), {7}: (4, {}), {8}: (5, {}), {9}: (6, {}), {10}: (7, {})}, calls=async_collective_fusion.19799
+     Allocation type: HLO temp
+     ==========================
+
+  2. Size: 5.00G
+     Shape: f32[80,4096,4096]{1,2,0:T(8,128)}
+     Unpadded size: 5.00G
+     XLA label: fusion.19794 = fusion(get-tuple-element.50592, get-tuple-element.50593, get-tuple-element.50595, get-tuple-element.50596, ...(+6)), kind=kOutput, output_to_operand_aliasing={{2}: (0, {}), {3}: (1, {}), {4}: (1, {}), {5}: (2, {}), {6}: (3, {}), {7}: (4, {}), {8}: (5, {}), {9}: (6, {}), {10}: (7, {})}, calls=async_collective_fusion.19794
+     Allocation type: HLO temp
+     ==========================
+
+  3. Size: 192.00M
+     Shape: f32[8,320,128,128]{1,0,3,2:T(8,128)}
+     Unpadded size: 160.00M
+     Extra memory due to padding: 32.00M (1.2x expansion)
+     XLA label: fusion.10848 = fusion(get-tuple-element.2135, copy-done.2193), kind=kLoop, calls=fused_computation.13115
+     Allocation type: HLO temp
+     ==========================
+
+  4. Size: 192.00M
+     Shape: f32[8,320,128,128]{1,0,3,2:T(8,128)}
+     Unpadded size: 160.00M
+     Extra memory due to padding: 32.00M (1.2x expansion)
+     XLA label: fusion.10847 = fusion(get-tuple-element.11243, get-tuple-element.2137, copy-done.2192), kind=kLoop, calls=fused_computation.13114
+     Allocation type: HLO temp
+     ==========================
+
+  5. Size: 192.00M
+     Shape: f32[8,320,128,128]{1,0,3,2:T(8,128)}
+     Unpadded size: 160.00M
+     Extra memory due to padding: 32.00M (1.2x expansion)
+     XLA label: fusion.11075 = fusion(get-tuple-element.11242, get-tuple-element.2139, copy-done.2191), kind=kLoop, calls=fused_computation.13339
+     Allocation type: HLO temp
+     ==========================
+
+  6. Size: 80.00M
+     Shape: f32[8,4096,640]{2,1,0:T(8,128)}
+     Unpadded size: 80.00M
+     XLA label: custom-call.5 = custom-call(), custom_call_target="AllocateBuffer"
+     Allocation type: HLO temp
+     ==========================
+
+  7. Size: 80.00M
+     Shape: f32[8,640,64,64]{1,0,3,2:T(8,128)}
+     Unpadded size: 80.00M
+     XLA label: copy-start.32 = copy-start(get-tuple-element.11237)
+     Allocation type: HLO temp
+     ==========================
+
+  8. Size: 80.00M
+     Shape: f32[8,4096,640]{2,1,0:T(8,128)}
+     Unpadded size: 80.00M
+     XLA label: custom-call.3 = custom-call(), custom_call_target="AllocateBuffer"
+     Allocation type: HLO temp
+     ==========================
+
+  9. Size: 80.00M
+     Shape: f32[8,4096,640]{2,1,0:T(8,128)}
+     Unpadded size: 80.00M
+     XLA label: custom-call.4 = custom-call(), custom_call_target="AllocateBuffer"
+     Allocation type: HLO temp
+     ==========================
+
+  10. Size: 80.00M
+     Shape: f32[8,4096,640]{2,1,0:T(8,128)}
+     Unpadded size: 80.00M
+     XLA label: copy-start.28 = copy-start(get-tuple-element.11234)
+     Allocation type: HLO temp
+     ==========================
+
+  11. Size: 48.00M
+     Shape: f32[8,320,64,64]{1,0,3,2:T(8,128)}
+     Unpadded size: 40.00M
+     Extra memory due to padding: 8.00M (1.2x expansion)
+     XLA label: copy-start.34 = copy-start(get-tuple-element.11239)
+     Allocation type: HLO temp
+     ==========================
+
+  12. Size: 40.00M
+     Shape: f32[8,1024,1280]{2,1,0:T(8,128)}
+     Unpadded size: 40.00M
+     XLA label: custom-call.36 = custom-call(), custom_call_target="AllocateBuffer"
+     Allocation type: HLO temp
+     ==========================
+
+  13. Size: 40.00M
+     Shape: f32[8,1024,1280]{2,1,0:T(8,128)}
+     Unpadded size: 40.00M
+     XLA label: custom-call.7 = custom-call(), custom_call_target="AllocateBuffer"
+     Allocation type: HLO temp
+     ==========================
+
+  14. Size: 40.00M
+     Shape: f32[8,1024,1280]{2,1,0:T(8,128)}
+     Unpadded size: 40.00M
+     XLA label: custom-call.53 = custom-call(), custom_call_target="AllocateBuffer"
+     Allocation type: HLO temp
+     ==========================
+
+  15. Size: 40.00M
+     Shape: f32[8,1024,1280]{2,1,0:T(8,128)}
+     Unpadded size: 40.00M
+     XLA label: custom-call.52 = custom-call(), custom_call_target="AllocateBuffer"
+     Allocation type: HLO temp
+     ==========================
+
+  16. Size: 40.00M
+     Shape: f32[8,1024,1280]{2,1,0:T(8,128)}
+     Unpadded size: 40.00M
+     XLA label: custom-call.51 = custom-call(), custom_call_target="AllocateBuffer"
+     Allocation type: HLO temp
+     ==========================
+
+  17. Size: 40.00M
+     Shape: f32[8,1280,32,32]{1,0,3,2:T(8,128)}
+     Unpadded size: 40.00M
+     XLA label: custom-call.49 = custom-call(), custom_call_target="AllocateBuffer"
+     Allocation type: HLO temp
+     ==========================
+
+  18. Size: 40.00M
+     Shape: f32[8,1280,32,32]{1,0,3,2:T(8,128)}
+     Unpadded size: 40.00M
+     XLA label: custom-call.50 = custom-call(), custom_call_target="AllocateBuffer"
+     Allocation type: HLO temp
+     ==========================
+
+  19. Size: 40.00M
+     Shape: f32[8,1024,1280]{2,1,0:T(8,128)}
+     Unpadded size: 40.00M
+     XLA label: custom-call.48 = custom-call(), custom_call_target="AllocateBuffer"
+     Allocation type: HLO temp
+     ==========================
+
+  20. Size: 40.00M
+     Shape: f32[8,1024,1280]{2,1,0:T(8,128)}
+     Unpadded size: 40.00M
+     XLA label: custom-call.47 = custom-call(), custom_call_target="AllocateBuffer"
+     Allocation type: HLO temp
+     ==========================
+
+
+
+[2026-06-19 05:24:31] COUNT_START num_images_per_prompt=128 dtype=torch.bfloat16
+[2026-06-19 05:24:34] MODEL_PROOF {"dtype": "torch.bfloat16", "model_id": "KBlueLeaf/Kohaku-XL-Zeta", "num_images_per_prompt": 128, "pipeline_class": "StableDiffusionXLUpsamplingGuidancePipeline", "prompt": "masterpiece, best quality, cinematic fantasy character portrait, detailed lighting", "resolution": "1024x1024", "scheduler": "EulerDiscreteScheduler", "steps": 25, "unet_config_or_model_path": "/root/.cache/huggingface/hub/models--KBlueLeaf--Kohaku-XL-Zeta/snapshots/c14affd9483ac7603cfff3f06b05da22a06deaa6/unet", "vae_config_or_model_path": "/root/.cache/huggingface/hub/models--KBlueLeaf--Kohaku-XL-Zeta/snapshots/c14affd9483ac7603cfff3f06b05da22a06deaa6/vae", "xla_device": "xla:0"}
+[2026-06-19 05:26:15] COUNT_FAILED count=128 error=ValueError: Allocation (size=21474836480) would exceed memory (size=17179869184) :: #allocation14167 [shape = 'f32[320,4096,4096]{1,2,0:T(8,128)}', space=hbm, size = 0xffffffffffffffff, tag = 'output of fusion.30572.remat@{1}'] :: <no-hlo-instruction>
+[2026-06-19 05:26:15] Traceback (most recent call last):
+  File "/tmp/ipykernel_14/4193289901.py", line 320, in main
+    cold_seconds, cold_images = run_pipeline_call(pipe, torch, xla, xm, count, SEED)
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/ipykernel_14/4193289901.py", line 198, in run_pipeline_call
+    result = pipe(
+             ^^^^^
+  File "/usr/local/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 120, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/kaggle/working/sdxl_upsample.py", line 957, in __call__
+    xla.sync()
+  File "/usr/local/lib/python3.12/site-packages/torch_xla/torch_xla.py", line 87, in sync
+    torch_xla._XLAC._xla_step_marker(
+ValueError: Allocation (size=21474836480) would exceed memory (size=17179869184) :: #allocation14167 [shape = 'f32[320,4096,4096]{1,2,0:T(8,128)}', space=hbm, size = 0xffffffffffffffff, tag = 'output of fusion.30572.remat@{1}'] :: <no-hlo-instruction>
+
+[2026-06-19 05:26:15] REAL_SDXL_TORCH_XLA_BENCHMARK_DONE

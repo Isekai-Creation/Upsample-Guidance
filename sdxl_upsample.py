@@ -1,4 +1,5 @@
 import inspect
+import logging
 from typing import Any, Callable, Dict, List, Optional, Union, Tuple
 
 import torch
@@ -8,8 +9,10 @@ from diffusers.utils import deprecate
 from diffusers.pipelines.stable_diffusion_xl.pipeline_output import (
     StableDiffusionXLPipelineOutput,
 )
-from loguru import logger
 import PIL.Image
+
+
+logger = logging.getLogger(__name__)
 
 
 try:
@@ -23,7 +26,11 @@ try:
         SpmdFullyShardedDataParallel as FSDPv2,
     )
 
-    xr.initialize_cache("/tmp")
+    try:
+        xr.initialize_cache("/tmp")
+    except AssertionError as exc:
+        if "already been initialized" not in str(exc):
+            raise
 
     xr.use_spmd()
 
@@ -36,8 +43,8 @@ try:
 
     print("_________________________XLA is Available!")
     XLA_AVAILABLE = True
-except:
-    print("_________________________XLA is not installed.")
+except Exception as exc:
+    print(f"_________________________XLA setup failed: {exc}")
     XLA_AVAILABLE = False
 
 
@@ -77,6 +84,34 @@ def randn_tensor(
             raise ValueError(
                 f"Cannot generate a {device} tensor from a generator of type {gen_device_type}."
             )
+
+    if isinstance(generator, list):
+        if len(generator) != batch_size:
+            raise ValueError(
+                f"You have passed a list of generators of length {len(generator)}, "
+                f"but requested an effective batch size of {batch_size}."
+            )
+        randn = [
+            torch.randn(
+                shape[1:],
+                generator=generator[i],
+                device=rand_device,
+                dtype=dtype,
+                layout=layout,
+            )
+            for i in range(batch_size)
+        ]
+        latents = torch.stack(randn, dim=0).to(device)
+    else:
+        latents = torch.randn(
+            shape,
+            generator=generator,
+            device=rand_device,
+            dtype=dtype,
+            layout=layout,
+        ).to(device)
+
+    return latents
 
 
 def rescale_noise_cfg(noise_cfg, noise_pred_text, guidance_rescale=0.0):
@@ -567,8 +602,11 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
             `tuple`. When returning a tuple, the first element is a list with the generated images.
         """
 
-        self.unet = FSDPv2(self.unet)
-        self.vae = FSDPv2(self.vae)
+        if XLA_AVAILABLE:
+            if not isinstance(self.unet, FSDPv2):
+                self.unet = FSDPv2(self.unet)
+            if not isinstance(self.vae, FSDPv2):
+                self.vae = FSDPv2(self.vae)
 
         callback = kwargs.pop("callback", None)
         callback_steps = kwargs.pop("callback_steps", None)
@@ -922,7 +960,9 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
                         step_idx = i // getattr(self.scheduler, "order", 1)
                         callback(step_idx, t, latents)
 
-        if not output_type == "latent":
+        if output_type == "latent":
+            res = latents
+        else:
             # make sure the VAE is in float32 mode, as it overflows in float16
             needs_upcasting = (
                 self.vae.dtype == torch.float16 and self.vae.config.force_upcast
@@ -971,8 +1011,6 @@ class StableDiffusionXLUpsamplingGuidancePipeline(StableDiffusionXLPipeline):
             # cast back to fp16 if needed
             if needs_upcasting:
                 self.vae.to(dtype=torch.float16)
-        else:
-            image = latents
 
         # del self.unet
 
